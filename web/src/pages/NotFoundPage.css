@@ -1,0 +1,55 @@
+.not-found-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  text-align: center;
+}
+
+.not-found-content {
+  max-width: 500px;
+  padding: 40px;
+  background-color: white;
+  border: 1px solid #eee;
+}
+
+.error-code {
+  font-size: 5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #000;
+}
+
+.error-title {
+  font-size: 1.75rem;
+  margin: 20px 0;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.error-message {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.back-home-btn {
+  display: inline-block;
+  background-color: #000;
+  color: white;
+  padding: 12px 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.85rem;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.back-home-btn:hover {
+  background-color: #333;
+  opacity: 1;
+} 

@@ -1,0 +1,269 @@
+.inference-page {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.inference-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.page-description {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 2rem;
+  max-width: 800px;
+}
+
+/* Model Selection */
+.model-selection {
+  margin-bottom: 30px;
+}
+
+.model-selection h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.model-options {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.model-option {
+  flex: 1;
+  min-width: 240px;
+  border: 1px solid #eee;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.model-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.model-option.selected {
+  border-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.model-option h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.model-option p {
+  color: #555;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Inference Controls */
+.inference-controls {
+  margin-bottom: 30px;
+  border: 1px solid #eee;
+  padding: 25px;
+  background-color: white;
+}
+
+.generation-params {
+  margin-bottom: 20px;
+}
+
+.params-toggle {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.params-toggle:hover {
+  background-color: #f9f9f9;
+}
+
+.params-controls {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #eee;
+  background-color: #f9f9f9;
+}
+
+.param-control {
+  margin-bottom: 15px;
+}
+
+.param-control:last-child {
+  margin-bottom: 0;
+}
+
+.param-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.param-control input {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.param-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.prompt-input {
+  margin-bottom: 15px;
+}
+
+.prompt-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.prompt-input textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.generate-button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.generate-button:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.generate-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Model Response */
+.model-response {
+  margin-bottom: 30px;
+  border: 1px solid #eee;
+  padding: 25px;
+  background-color: white;
+}
+
+.model-response h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.response-content {
+  font-family: 'JetBrains Mono', monospace;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border: 1px solid #eee;
+  overflow-x: auto;
+}
+
+.typing-indicator {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Inference Explainer */
+.inference-explainer {
+  margin-bottom: 30px;
+  border: 1px solid #eee;
+  padding: 25px;
+  background-color: white;
+}
+
+.inference-explainer h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.inference-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.inference-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #000;
+  color: white;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.step-content p {
+  margin: 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.github-link {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.github-link a {
+  color: #000;
+  font-weight: 600;
+  margin-left: 5px;
+  text-decoration: none;
+  border-bottom: 1px solid;
+}
+
+.github-link a:hover {
+  opacity: 0.8;
+} 

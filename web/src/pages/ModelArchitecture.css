@@ -1,0 +1,328 @@
+body {
+  background-color: #fafafa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+  color: #000;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #eee;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+/* Architecture Selector */
+.architecture-selector-container {
+  background-color: white;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+}
+
+.architecture-options {
+  display: flex;
+  border-bottom: 1px solid #eee;
+}
+
+.architecture-option {
+  flex: 1;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.architecture-option:hover {
+  background-color: #f9f9f9;
+}
+
+.architecture-option.selected {
+  background-color: #f5f5f5;
+  border-bottom-color: #000;
+}
+
+.architecture-option h3 {
+  margin: 0 0 5px;
+  font-size: 1.15rem;
+}
+
+.architecture-examples {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.selected-architecture-details {
+  padding: 30px;
+}
+
+.selected-architecture-details h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.architecture-description {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.architecture-strengths {
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* Input Text Control */
+.input-text-control {
+  margin-top: 30px;
+}
+
+.input-text-control label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+/* Attention Explainer */
+.attention-explainer-card {
+  background-color: white;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+  padding: 30px;
+}
+
+.attention-explainer-content {
+  margin-top: 20px;
+}
+
+.attention-intro {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  max-width: 800px;
+}
+
+.attention-process-visual {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.process-step {
+  display: flex;
+  gap: 15px;
+}
+
+.step-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+}
+
+.step-content h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.step-content p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.step-visualization {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f5f5f5;
+}
+
+.token-representation {
+  background-color: #000;
+  color: white;
+  padding: 8px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.projection-arrows {
+  display: flex;
+  justify-content: space-around;
+}
+
+.arrow-line {
+  color: #666;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.step-formula {
+  background-color: #111;
+  color: white;
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+}
+
+.attention-distribution {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 100px;
+  padding: 10px;
+}
+
+.attention-weight {
+  width: 20px;
+  background-color: #000;
+  transition: height 0.3s ease;
+}
+
+.attention-weight:hover {
+  background-color: #333;
+}
+
+.weighted-values {
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.value-vector {
+  background-color: #eee;
+  padding: 6px 12px;
+}
+
+.value-vector.v3 {
+  background-color: #000;
+  color: white;
+}
+
+.sum-symbol {
+  font-size: 1.5rem;
+  margin: 5px 0;
+}
+
+.output-vector {
+  background-color: #000;
+  color: white;
+  padding: 8px 16px;
+}
+
+.attention-key-insight {
+  background-color: #000;
+  color: white;
+  padding: 25px;
+  margin: 30px 0;
+}
+
+.insight-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  letter-spacing: -0.01em;
+}
+
+.multi-head-explanation {
+  margin-top: 40px;
+}
+
+.multi-head-explanation h3 {
+  margin-bottom: 15px;
+}
+
+.multi-head-explanation p {
+  margin-bottom: 20px;
+  max-width: 800px;
+}
+
+.multi-head-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.attention-head {
+  padding: 12px 20px;
+  background-color: #111;
+  color: white;
+}
+
+.head-1 { background-color: #4a90e2; }
+.head-2 { background-color: #50c878; }
+.head-3 { background-color: #a46fbf; }
+.head-4 { background-color: #e67e22; }
+
+.concat-arrow {
+  font-size: 1.5rem;
+  margin: 0 10px;
+}
+
+.concatenated-output {
+  padding: 12px 20px;
+  background-color: #000;
+  color: white;
+}
+
+code {
+  background-color: #111;
+  padding: 3px 6px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .architecture-options {
+    flex-direction: column;
+  }
+  
+  .attention-process-visual {
+    grid-template-columns: 1fr;
+  }
+  
+  .multi-head-visual {
+    flex-direction: column;
+  }
+} 

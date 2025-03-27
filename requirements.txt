@@ -1,0 +1,19 @@
+numpy>=1.20.0
+torch>=1.9.0
+transformers>=4.15.0
+datasets>=1.18.0
+scikit-learn>=1.0.0
+matplotlib>=3.5.0
+tqdm>=4.62.0
+pandas>=1.3.0
+sentencepiece>=0.1.96
+tokenizers>=0.10.3
+wandb>=0.12.0
+pytest>=6.2.5
+# Backend API requirements
+fastapi>=0.95.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+# CORS support for local development
+starlette>=0.27.0 

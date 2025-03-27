@@ -1,0 +1,107 @@
+.tokenizer-explorer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tokenizer-explorer h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #eee;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.input-container {
+  margin-bottom: 20px;
+}
+
+.input-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.tokenize-button {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.85rem;
+}
+
+.tokenize-button:hover {
+  background-color: #333;
+}
+
+.tokenize-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.visualization-card {
+  background-color: white;
+  border: 1px solid #eee;
+}
+
+.explanation {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #fafafa;
+  border-left: 3px solid #000;
+}
+
+.explanation h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.explanation p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.explanation ol {
+  padding-left: 20px;
+}
+
+.explanation li {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .tokenizer-explorer {
+    padding: 0 15px;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+} 
