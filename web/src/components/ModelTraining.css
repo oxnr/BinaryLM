@@ -450,13 +450,14 @@ button:disabled {
 .learning-process {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  margin: 5px auto;
+  gap: 30px;
+  margin: 30px auto;
   width: 100%;
+  max-width: 1200px;
 }
 
 .learning-process .process-step {
-  padding: 20px;
+  padding: 40px 60px;
   background-color: white;
   border: 1px solid #eee;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -464,7 +465,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 250px;
+  min-height: 300px;
 }
 
 .learning-process .process-step h3 {
@@ -472,8 +473,15 @@ button:disabled {
   color: #000;
   font-weight: 600;
   border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+}
+
+.learning-process .process-step p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
 }
 
 .key-points {
@@ -485,7 +493,7 @@ button:disabled {
 }
 
 .training-visualization {
-  margin-top: 20px;
+  margin-top: 30px;
   width: 100%;
 }
 
@@ -501,16 +509,16 @@ button:disabled {
 .token-sequence {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 15px;
+  margin-bottom: 20px;
   flex-wrap: nowrap;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
 }
 
 .token {
-  padding: 5px 10px;
+  padding: 8px 15px;
   font-family: monospace;
-  font-size: 0.95rem;
+  font-size: 1rem;
   border: 1px solid #ddd;
   color: #222;
 }
@@ -528,6 +536,7 @@ button:disabled {
 
 .arrow {
   color: #666;
+  font-size: 1.2rem;
 }
 
 .training-jobs h3 {
@@ -1089,4 +1098,13 @@ button:disabled {
   text-align: center;
   max-width: 800px;
   margin: 0 auto 30px;
+}
+
+.model-size, .key-point, .evaluation-metrics .metric {
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.model-comparison, .key-points, .evaluation-metrics {
+  margin-top: 30px;
 } 
