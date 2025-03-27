@@ -103,94 +103,121 @@
 }
 
 .tutorial-sidebar {
-  width: 260px;
-  flex-shrink: 0;
-}
-
-.toc-toggle {
-  margin-bottom: 20px;
-}
-
-.view-toggle {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  padding: 8px 15px;
-  font-size: 0.9rem;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  text-align: center;
-}
-
-.view-toggle:hover {
-  background-color: #eee;
+  width: 250px;
+  padding-right: 1.5rem;
+  border-right: 1px solid #eaeaea;
+  overflow-y: auto;
+  max-height: calc(100vh - 150px);
+  position: sticky;
+  top: 1rem;
 }
 
 .tutorial-toc {
-  border: 1px solid #eee;
-  border-radius: 4px;
-  overflow: hidden;
-  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .toc-section {
-  border-bottom: 1px solid #eee;
-}
-
-.toc-section:last-child {
-  border-bottom: none;
+  margin-bottom: 1rem;
 }
 
 .section-title {
-  padding: 12px 15px;
   font-weight: 600;
+  color: #333;
   cursor: pointer;
-  background-color: white;
-  transition: background-color 0.2s ease;
-  font-size: 0.95rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+  position: relative;
 }
 
 .section-title:hover {
-  background-color: #f5f5f5;
+  background-color: #f0f7ff;
 }
 
 .section-title.active {
-  background-color: #f5f5f5;
-  border-left: 3px solid #111;
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
-.section-steps {
-  padding: 5px 0;
-  background-color: #f9f9f9;
+.section-title.completed::before {
+  content: "✓";
+  position: absolute;
+  left: -18px;
+  color: #4caf50;
 }
 
-.step-title {
-  padding: 8px 15px 8px 25px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  position: relative;
-  transition: background-color 0.2s ease;
-}
-
-.step-title:hover {
-  background-color: #f0f0f0;
-}
-
-.step-title.active {
-  background-color: #f0f0f0;
+.section-quiz-score {
+  background-color: #f0f7ff;
+  color: #0052cc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
-.step-title.completed {
-  color: #666;
+.section-steps {
+  margin-left: 1rem;
+  border-left: 2px solid #eaeaea;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
-.check-mark {
+.step-link {
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #666;
+  transition: all 0.2s;
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.step-link:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.step-link.active {
+  background-color: #edf7ff;
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.step-link.completed {
+  color: #4caf50;
+}
+
+.step-link.completed::before {
+  content: "✓";
   position: absolute;
-  right: 20px;
-  color: #2e7d32;
-  font-weight: bold;
+  left: -16px;
+  color: #4caf50;
+  font-size: 0.8rem;
+}
+
+.view-toggle {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #555;
+  transition: background-color 0.2s;
+}
+
+.view-toggle:hover {
+  background-color: #e5e5e5;
 }
 
 .tutorial-step-content {
@@ -299,27 +326,25 @@
 .step-navigation {
   display: flex;
   justify-content: space-between;
-  margin-top: 40px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
+  margin-top: 2rem;
 }
 
 .prev-button, .next-button {
-  padding: 10px 25px;
+  padding: 0.5rem 1.5rem;
   border: none;
+  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .prev-button {
-  background-color: #f5f5f5;
+  background-color: #e0e0e0;
   color: #333;
 }
 
 .prev-button:hover:not(:disabled) {
-  background-color: #eee;
+  background-color: #d0d0d0;
 }
 
 .prev-button:disabled {
@@ -328,12 +353,12 @@
 }
 
 .next-button {
-  background-color: #111;
+  background-color: #3b82f6;
   color: white;
 }
 
 .next-button:hover {
-  background-color: #333;
+  background-color: #2563eb;
 }
 
 @media (max-width: 900px) {
@@ -382,4 +407,65 @@
   font-weight: 500;
   padding: 15px;
   text-align: center;
+}
+
+/* Quiz styles within the tutorial */
+.quiz-container {
+  background-color: #f9f9fb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.quiz-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.quiz-description {
+  margin-bottom: 1.5rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.quiz-title {
+  color: #4f46e5 !important;
+  font-weight: 500;
+}
+
+.quiz-title.active {
+  color: #4338ca !important;
+  font-weight: 600;
+}
+
+.quiz-title.completed {
+  color: #059669 !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .llm-tutorial {
+    padding: 1rem;
+  }
+  
+  .tutorial-content {
+    flex-direction: column;
+  }
+  
+  .tutorial-sidebar {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .tutorial-step-content {
+    width: 100%;
+  }
+  
+  .step-mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
 } 

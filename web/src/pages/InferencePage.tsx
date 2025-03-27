@@ -49,14 +49,6 @@ const InferencePage: React.FC = () => {
         Test the language model by providing a prompt and generating text. This simulates how an LLM processes your input and generates responses.
       </p>
       
-      <div className="tutorial-link-banner">
-        <Link to="/tutorials" className="tutorial-link">
-          <span className="tutorial-icon">📚</span> 
-          Explore LLM inference techniques in our detailed tutorial
-          <span className="arrow-icon">→</span>
-        </Link>
-      </div>
-      
       <div className="model-selection">
         <h3>Select Model</h3>
         <div className="model-options">

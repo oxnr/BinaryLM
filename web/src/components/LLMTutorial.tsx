@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
+import TutorialQuiz, { QuizQuestion } from './TutorialQuiz';
 import './LLMTutorial.css';
 
 // These should match the interfaces in TutorialsPage.tsx
@@ -17,6 +18,7 @@ interface TutorialSection {
   title: string;
   description: string;
   steps: TutorialStep[];
+  quiz?: QuizQuestion[];
 }
 
 interface Tutorial {
@@ -37,6 +39,9 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
   const [activeStep, setActiveStep] = useState<string>(tutorial.sections[0].steps[0].id);
   const [showAllSteps, setShowAllSteps] = useState<boolean>(false);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const [completedQuizzes, setCompletedQuizzes] = useState<Set<string>>(new Set());
+  const [showingQuiz, setShowingQuiz] = useState<boolean>(false);
+  const [quizScores, setQuizScores] = useState<Record<string, { score: number, total: number }>>({});
   
   const currentSection = tutorial.sections.find(section => section.id === activeSection);
   const currentStep = currentSection?.steps.find(step => step.id === activeStep);
@@ -82,6 +87,32 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
     newCompletedSteps.add(stepId);
     setCompletedSteps(newCompletedSteps);
   };
+
+  const markQuizAsCompleted = (sectionId: string, score: number, total: number) => {
+    const newCompletedQuizzes = new Set(completedQuizzes);
+    newCompletedQuizzes.add(sectionId);
+    setCompletedQuizzes(newCompletedQuizzes);
+    
+    setQuizScores(prev => ({
+      ...prev,
+      [sectionId]: { score, total }
+    }));
+  };
+  
+  const handleQuizComplete = (score: number, totalQuestions: number) => {
+    if (currentSection) {
+      markQuizAsCompleted(currentSection.id, score, totalQuestions);
+      
+      // Automatically proceed to the next section if this isn't the last one
+      const currentSectionIndex = tutorial.sections.findIndex(section => section.id === activeSection);
+      if (currentSectionIndex < tutorial.sections.length - 1) {
+        const nextSection = tutorial.sections[currentSectionIndex + 1];
+        setActiveSection(nextSection.id);
+        setActiveStep(nextSection.steps[0].id);
+        setShowingQuiz(false);
+      }
+    }
+  };
   
   const goToNextStep = () => {
     if (!currentSection) return;
@@ -93,25 +124,38 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
       markStepAsCompleted(activeStep);
       setActiveStep(currentSection.steps[currentStepIndex + 1].id);
     } else {
-      // Current section is complete, find next section
-      const currentSectionIndex = tutorial.sections.findIndex(section => section.id === activeSection);
+      // Current section is complete, check if there's a quiz
+      markStepAsCompleted(activeStep);
       
-      if (currentSectionIndex < tutorial.sections.length - 1) {
-        // Move to first step of next section
-        markStepAsCompleted(activeStep);
-        const nextSection = tutorial.sections[currentSectionIndex + 1];
-        setActiveSection(nextSection.id);
-        setActiveStep(nextSection.steps[0].id);
+      if (currentSection.quiz && currentSection.quiz.length > 0 && !completedQuizzes.has(currentSection.id)) {
+        // Show the quiz for this section
+        setShowingQuiz(true);
       } else {
-        // Tutorial complete
-        markStepAsCompleted(activeStep);
-        alert('Congratulations! You have completed this tutorial.');
+        // No quiz, or quiz already completed - find next section
+        const currentSectionIndex = tutorial.sections.findIndex(section => section.id === activeSection);
+        
+        if (currentSectionIndex < tutorial.sections.length - 1) {
+          // Move to first step of next section
+          const nextSection = tutorial.sections[currentSectionIndex + 1];
+          setActiveSection(nextSection.id);
+          setActiveStep(nextSection.steps[0].id);
+        } else {
+          // Tutorial complete
+          alert('Congratulations! You have completed this tutorial.');
+        }
       }
     }
   };
   
   const goToPrevStep = () => {
     if (!currentSection) return;
+    
+    // If showing quiz, go back to the last step in the section
+    if (showingQuiz) {
+      setShowingQuiz(false);
+      setActiveStep(currentSection.steps[currentSection.steps.length - 1].id);
+      return;
+    }
     
     const currentStepIndex = currentSection.steps.findIndex(step => step.id === activeStep);
     
@@ -125,14 +169,28 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
       if (currentSectionIndex > 0) {
         const prevSection = tutorial.sections[currentSectionIndex - 1];
         setActiveSection(prevSection.id);
-        setActiveStep(prevSection.steps[prevSection.steps.length - 1].id);
+        
+        // Check if the previous section has a quiz and it's not completed
+        if (prevSection.quiz && prevSection.quiz.length > 0 && !completedQuizzes.has(prevSection.id)) {
+          setShowingQuiz(true);
+        } else {
+          // Go to the last step of the previous section
+          setActiveStep(prevSection.steps[prevSection.steps.length - 1].id);
+        }
       }
     }
   };
   
   const calculateProgress = () => {
+    // Count all steps and quizzes
     const totalSteps = tutorial.sections.reduce((acc, section) => acc + section.steps.length, 0);
-    return Math.round((completedSteps.size / totalSteps) * 100);
+    const totalQuizzes = tutorial.sections.filter(section => section.quiz && section.quiz.length > 0).length;
+    const totalItems = totalSteps + totalQuizzes;
+    
+    // Count completed steps and quizzes
+    const completedItems = completedSteps.size + completedQuizzes.size;
+    
+    return Math.round((completedItems / totalItems) * 100);
   };
   
   return (
@@ -176,30 +234,50 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
             {tutorial.sections.map(section => (
               <div key={section.id} className="toc-section">
                 <div 
-                  className={`section-title ${activeSection === section.id ? 'active' : ''}`}
+                  className={`section-title ${activeSection === section.id ? 'active' : ''} 
+                    ${section.steps.every(step => completedSteps.has(step.id)) && completedQuizzes.has(section.id) ? 'completed' : ''}`}
                   onClick={() => {
                     setActiveSection(section.id);
                     setActiveStep(section.steps[0].id);
+                    setShowingQuiz(false);
                   }}
                 >
                   {section.title}
+                  {completedQuizzes.has(section.id) && (
+                    <span className="section-quiz-score">
+                      {quizScores[section.id]?.score}/{quizScores[section.id]?.total}
+                    </span>
+                  )}
                 </div>
                 
                 {(showAllSteps || activeSection === section.id) && (
                   <div className="section-steps">
                     {section.steps.map(step => (
                       <div 
-                        key={step.id} 
-                        className={`step-title ${activeStep === step.id ? 'active' : ''} ${completedSteps.has(step.id) ? 'completed' : ''}`}
+                        key={step.id}
+                        className={`step-link ${activeStep === step.id && activeSection === section.id ? 'active' : ''} 
+                          ${completedSteps.has(step.id) ? 'completed' : ''}`}
                         onClick={() => {
                           setActiveSection(section.id);
                           setActiveStep(step.id);
+                          setShowingQuiz(false);
                         }}
                       >
                         {step.title}
-                        {completedSteps.has(step.id) && <span className="check-mark">✓</span>}
                       </div>
                     ))}
+                    {section.quiz && section.quiz.length > 0 && (
+                      <div 
+                        className={`step-link ${activeSection === section.id && showingQuiz ? 'active' : ''} 
+                          ${completedQuizzes.has(section.id) ? 'completed' : ''}`}
+                        onClick={() => {
+                          setActiveSection(section.id);
+                          setShowingQuiz(true);
+                        }}
+                      >
+                        Quiz
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -208,7 +286,18 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
         </div>
         
         <div className="tutorial-step-content">
-          {currentStep && (
+          {showingQuiz && currentSection && currentSection.quiz ? (
+            <div className="quiz-container">
+              <h2>Quiz: {currentSection.title}</h2>
+              <p className="quiz-description">
+                Test your understanding of {currentSection.title} with these questions.
+              </p>
+              <TutorialQuiz 
+                questions={currentSection.quiz} 
+                onComplete={handleQuizComplete}
+              />
+            </div>
+          ) : currentStep ? (
             <div className="step-container">
               <h2 className="step-title">{currentStep.title}</h2>
               <div className="step-content">
@@ -248,7 +337,10 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
                 <button 
                   className="prev-button"
                   onClick={goToPrevStep}
-                  disabled={activeSection === tutorial.sections[0].id && activeStep === tutorial.sections[0].steps[0].id}
+                  disabled={
+                    activeSection === tutorial.sections[0].id && 
+                    activeStep === tutorial.sections[0].steps[0].id
+                  }
                 >
                   Previous
                 </button>
@@ -257,13 +349,17 @@ const LLMTutorial: React.FC<LLMTutorialProps> = ({ tutorial }) => {
                   onClick={goToNextStep}
                 >
                   {activeSection === tutorial.sections[tutorial.sections.length - 1].id && 
-                   activeStep === currentSection?.steps[currentSection.steps.length - 1].id 
+                  activeStep === currentSection?.steps[currentSection.steps.length - 1].id &&
+                  (!currentSection.quiz || completedQuizzes.has(currentSection.id))
                     ? 'Complete' 
-                    : 'Next'}
+                    : activeStep === currentSection?.steps[currentSection.steps.length - 1].id && 
+                      currentSection.quiz && !completedQuizzes.has(currentSection.id)
+                      ? 'Take Quiz'
+                      : 'Next'}
                 </button>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

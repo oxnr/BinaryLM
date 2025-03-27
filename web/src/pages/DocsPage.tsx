@@ -4,6 +4,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import mermaid from 'mermaid';
+import DocsExplainer from '../components/DocsExplainer';
 import './DocsPage.css';
 
 // Configure Mermaid
@@ -25,9 +26,12 @@ const DocsPage: React.FC = () => {
   const [markdown, setMarkdown] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showExplainer, setShowExplainer] = useState<string | null>(null);
   const [docFiles, setDocFiles] = useState<DocFile[]>([
     { id: 'readme', title: 'README', path: '/README.md' },
     { id: 'glossary', title: 'Glossary', path: '/Glossary.md' },
+    { id: 'masking', title: 'Masking', path: '/masking' },
+    { id: 'softmax', title: 'Softmax', path: '/softmax' },
   ]);
   const navigate = useNavigate();
   const mermaidRef = useRef<HTMLDivElement>(null);
@@ -40,6 +44,16 @@ const DocsPage: React.FC = () => {
       
       try {
         const selectedDoc = docFiles.find(doc => doc.id === docId) || docFiles[0];
+        
+        // Check if this is a special term that should show the explainer
+        if (['masking', 'softmax'].includes(selectedDoc.id)) {
+          setShowExplainer(selectedDoc.id);
+          setMarkdown(''); // No need to fetch markdown
+          setLoading(false);
+          return;
+        }
+        
+        setShowExplainer(null);
         
         // In a real application, you would fetch from a server
         // For local development, we're reading from the public folder
@@ -150,6 +164,22 @@ const DocsPage: React.FC = () => {
           <div className="docs-loading">Loading documentation...</div>
         ) : error ? (
           <div className="docs-error">{error}</div>
+        ) : showExplainer ? (
+          <>
+            <div className="docs-actions">
+              <select 
+                value={docId} 
+                onChange={(e) => navigate(`/docs/${e.target.value}`)}
+                className="docs-mobile-nav"
+              >
+                {docFiles.map(doc => (
+                  <option key={doc.id} value={doc.id}>{doc.title}</option>
+                ))}
+              </select>
+            </div>
+            
+            <DocsExplainer term={showExplainer} />
+          </>
         ) : (
           <>
             <div className="docs-actions">

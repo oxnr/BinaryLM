@@ -35,14 +35,6 @@ const ModelArchitecture: React.FC = () => {
     <div>
       <h1>Model Architecture Explorer</h1>
       
-      <div className="tutorial-link-banner">
-        <Link to="/tutorials" className="tutorial-link">
-          <span className="tutorial-icon">📚</span> 
-          Learn more with our transformer architecture tutorial
-          <span className="arrow-icon">→</span>
-        </Link>
-      </div>
-      
       <div className="architecture-selector-container">
         <div className="architecture-options">
           {Object.entries(architectureDescriptions).map(([type, details]) => (

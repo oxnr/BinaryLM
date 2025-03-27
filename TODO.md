@@ -34,9 +34,11 @@
 - [x] Implement tokenizer visualization API endpoint
 - [x] Implement training dashboard
 - [x] Add training metrics charts with real-time updates
-- [ ] Create step-by-step guided tutorials for each LLM concept
+- [x] Create step-by-step guided tutorials for each LLM concept
 - [ ] Add interactive animations showing data flow through model
+- [ ] Implement probability distribution visualizer for next-token predictions
 - [ ] Implement explainable AI features to visualize attention patterns
+- [ ] Create interactive quizzes at the end of each tutorial section
 - [ ] Create quiz/challenge components for testing understanding
 
 ## Phase 4: Backend Implementation - Real Model Training 🆕

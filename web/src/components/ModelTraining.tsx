@@ -1231,14 +1231,6 @@ const ModelTraining: React.FC = () => {
         <p>Configure and train a language model with different parameters and datasets</p>
       </div>
       
-      <div className="tutorial-link-banner">
-        <Link to="/tutorials" className="tutorial-link">
-          <span className="tutorial-icon">📚</span> 
-          Learn about LLM training with our comprehensive tutorial
-          <span className="arrow-icon">→</span>
-        </Link>
-      </div>
-
       <div className="tab-navigation">
         <button 
           className={`tab-button ${activeTab === 'explanation' ? 'active' : ''}`}

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import LLMTutorial from '../components/LLMTutorial';
+import { QuizQuestion } from '../components/TutorialQuiz';
+import QuizLibrary from '../components/QuizLibrary';
 import './TutorialsPage.css';
 
 // Example code snippets for tutorials
@@ -47,23 +49,24 @@ print(generate_with_params(0.7, 0, 0.9))
 `;
 
 // Define some shared interfaces for tutorials
-interface TutorialStep {
+export interface TutorialStep {
   id: string;
   title: string;
   content: React.ReactNode;
   image?: string;
-  codeExample?: string;
   mermaidDiagram?: string;
+  codeExample?: string;
 }
 
-interface TutorialSection {
+export interface TutorialSection {
   id: string;
   title: string;
   description: string;
   steps: TutorialStep[];
+  quiz?: QuizQuestion[];
 }
 
-interface Tutorial {
+export interface Tutorial {
   id: string;
   title: string;
   description: string;
@@ -73,7 +76,7 @@ interface Tutorial {
 }
 
 // Define the tokenization tutorial
-const TOKENIZATION_TUTORIAL: Tutorial = {
+export const TOKENIZATION_TUTORIAL: Tutorial = {
   id: 'tokenization-101',
   title: 'Tokenization 101: How LLMs Process Text',
   description: 'Learn how language models convert text into tokens for processing and why tokenization is crucial for model performance.',
@@ -83,7 +86,7 @@ const TOKENIZATION_TUTORIAL: Tutorial = {
     {
       id: 'introduction',
       title: 'Introduction to Tokenization',
-      description: 'Understanding the basics of text tokenization',
+      description: 'Understand what tokenization is and why it matters in language models.',
       steps: [
         {
           id: 'what-is-tokenization',
@@ -133,12 +136,50 @@ const TOKENIZATION_TUTORIAL: Tutorial = {
             </div>
           )
         }
+      ],
+      quiz: [
+        {
+          id: 'intro-q1',
+          question: "What is tokenization in the context of language models?",
+          options: [
+            "Converting text into images for visualization",
+            "Breaking text into smaller units for processing by the model",
+            "Encrypting text data to ensure privacy",
+            "Converting text to speech for voice recognition"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Tokenization is the process of breaking text into smaller units (tokens) that serve as the basic input units for language models. These tokens might be words, subwords, or characters depending on the tokenization method."
+        },
+        {
+          id: 'intro-q2',
+          question: "Why is tokenization necessary for language models?",
+          options: [
+            "It's not actually necessary, just a preprocessing convenience",
+            "To reduce memory usage only",
+            "To enable models to process fixed-size inputs and handle vocabulary efficiently",
+            "To make the training process slower and more thorough"
+          ],
+          correctOptionIndex: 2,
+          explanation: "Tokenization is essential because neural networks need fixed-size numerical inputs. Tokenization converts variable-length text into sequences of tokens with fixed-size representations (embeddings), allowing models to process text efficiently."
+        },
+        {
+          id: 'intro-q3',
+          question: "What problem does tokenization help solve in language modeling?",
+          options: [
+            "The infinite vocabulary problem",
+            "The syntax parsing problem",
+            "The semantic understanding problem",
+            "The language translation problem"
+          ],
+          correctOptionIndex: 0,
+          explanation: "Tokenization helps solve the infinite vocabulary problem. Languages have practically unlimited possible words, but models need a finite vocabulary. Tokenization strategies like subword tokenization allow models to handle unseen words by breaking them into familiar subword pieces."
+        }
       ]
     },
     {
       id: 'tokenization-methods',
       title: 'Tokenization Methods',
-      description: 'Different approaches to tokenization',
+      description: 'Explore different approaches to tokenization and their trade-offs.',
       steps: [
         {
           id: 'word-based',
@@ -244,12 +285,50 @@ graph LR
     end
           `
         },
+      ],
+      quiz: [
+        {
+          id: 'methods-q1',
+          question: "Which tokenization method suffers most from the out-of-vocabulary (OOV) problem?",
+          options: [
+            "Character-based tokenization",
+            "Word-based tokenization",
+            "Subword tokenization (BPE)",
+            "Hybrid tokenization"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Word-based tokenization suffers most from the OOV problem because it treats each word as a single token. If a word wasn't in the training vocabulary, the model can't process it properly and must use an <UNK> token, losing all semantic information of that word."
+        },
+        {
+          id: 'methods-q2',
+          question: "What is an advantage of character-based tokenization?",
+          options: [
+            "It produces the most compact representation",
+            "It has the most semantic meaning per token",
+            "It has no out-of-vocabulary (OOV) problem",
+            "It requires the least computational resources"
+          ],
+          correctOptionIndex: 2,
+          explanation: "Character-based tokenization has virtually no OOV problem since the vocabulary is very small (just the set of all characters in the language). Any text can be tokenized using just these characters, so there's never an unknown token problem."
+        },
+        {
+          id: 'methods-q3',
+          question: "Why is subword tokenization like BPE often preferred in modern language models?",
+          options: [
+            "It's the fastest method to implement",
+            "It balances vocabulary size and semantic meaning",
+            "It uses the least memory during inference",
+            "It was proven mathematically to be optimal"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Subword tokenization like BPE strikes a balance between word-based (which preserves semantics but has OOV issues) and character-based (which has no OOV issues but loses semantic connections). Subwords are large enough to capture meaning but small enough to combine into unknown words."
+        }
       ]
     },
     {
       id: 'bpe-algorithm',
       title: 'Byte-Pair Encoding (BPE)',
-      description: 'Understanding the most common tokenization algorithm',
+      description: 'Master the most popular subword tokenization algorithm used in modern LLMs.',
       steps: [
         {
           id: 'bpe-basics',
@@ -313,12 +392,62 @@ graph LR
           ),
           codeExample: "def learn_bpe(corpus, num_merges):\n    # Start with character vocabulary\n    vocab = set(corpus)\n    \n    # Original corpus split into characters\n    splits = [[c for c in word] for word in corpus.split()]\n    \n    for i in range(num_merges):\n        # Count pairs\n        pairs = get_stats(splits)\n        if not pairs:\n            break\n            \n        # Find most frequent pair\n        best_pair = max(pairs, key=pairs.get)\n        \n        # Create new token from pair\n        new_token = best_pair[0] + best_pair[1]\n        vocab.add(new_token)\n        \n        # Apply merge throughout corpus\n        splits = merge_tokens(best_pair, splits)\n    \n    return vocab, splits"
         }
+      ],
+      quiz: [
+        {
+          id: 'bpe-q1',
+          question: "What is the first step in the BPE algorithm?",
+          options: [
+            "Merge the most frequent character pair",
+            "Split all words into individual characters",
+            "Calculate token frequencies in the corpus",
+            "Determine the desired vocabulary size"
+          ],
+          correctOptionIndex: 1,
+          explanation: "BPE starts by splitting all words into individual characters, creating the initial character vocabulary. After this initialization, it begins the iterative merging process based on frequency."
+        },
+        {
+          id: 'bpe-q2',
+          question: "How does BPE decide which character pairs to merge?",
+          options: [
+            "Random selection within the text",
+            "Based on linguistic rules of the language",
+            "By the semantic meaning of the resulting merge",
+            "By selecting the most frequent adjacent pair"
+          ],
+          correctOptionIndex: 3,
+          explanation: "BPE merges character pairs based on frequency. In each iteration, it counts all adjacent pairs and merges the most frequent pair, adding the new merged token to the vocabulary."
+        },
+        {
+          id: 'bpe-q3',
+          question: "When does the BPE training process stop?",
+          options: [
+            "When no more merges are possible",
+            "When reaching a predefined number of merge operations",
+            "When the algorithm reaches 100% accuracy",
+            "When all words can be tokenized as single tokens"
+          ],
+          correctOptionIndex: 1,
+          explanation: "The BPE algorithm stops when it reaches a predefined number of merge operations, which effectively determines the final vocabulary size. This is a hyperparameter that balances vocabulary size and tokenization granularity."
+        },
+        {
+          id: 'bpe-q4',
+          question: "How does BPE handle completely new words during tokenization?",
+          options: [
+            "It always uses the <UNK> token for new words",
+            "It breaks them into subwords from its learned vocabulary",
+            "It adds them to the vocabulary on the fly",
+            "It ignores them completely in the input"
+          ],
+          correctOptionIndex: 1,
+          explanation: "BPE handles new words by breaking them down into the subword units it learned during training. If a word wasn't seen during training, it will be split into the subword pieces that comprise its characters, allowing the model to still process it meaningfully."
+        }
       ]
     },
     {
       id: 'tokenization-challenges',
       title: 'Challenges in Tokenization',
-      description: 'Common problems and solutions in tokenization',
+      description: 'Explore common challenges and edge cases in tokenization.',
       steps: [
         {
           id: 'multilingual',
@@ -390,12 +519,50 @@ graph LR
             </div>
           )
         }
+      ],
+      quiz: [
+        {
+          id: 'challenges-q1',
+          question: "Why is multilingual tokenization particularly challenging?",
+          options: [
+            "Different languages use different character sets",
+            "It requires a much larger vocabulary size",
+            "Translation between languages becomes necessary",
+            "All of the above"
+          ],
+          correctOptionIndex: 3,
+          explanation: "Multilingual tokenization is challenging for multiple reasons: different languages use different character sets and writing systems, require larger vocabularies to cover multiple languages adequately, and may need to handle translation context. Additionally, some languages have very different morphological structures that affect optimal tokenization strategies."
+        },
+        {
+          id: 'challenges-q2',
+          question: "What special token is typically used to mark the beginning of a sequence?",
+          options: [
+            "<BOT>",
+            "<BOS>",
+            "<START>",
+            "<SEQ>"
+          ],
+          correctOptionIndex: 1,
+          explanation: "The <BOS> (Beginning of Sequence) token is typically used to mark the start of an input sequence. This special token helps models understand where input text begins and provides positional context for the first actual tokens."
+        },
+        {
+          id: 'challenges-q3',
+          question: "Which of these is NOT typically a challenge in tokenization?",
+          options: [
+            "Handling emojis and special characters",
+            "Aligning tokens with linguistic units",
+            "Managing vocabulary size constraints",
+            "Ensuring all tokens have the same byte length"
+          ],
+          correctOptionIndex: 3,
+          explanation: "Ensuring all tokens have the same byte length is not a typical tokenization challenge. In fact, tokens intentionally have different lengths in bytes or characters. The actual challenges include handling special characters, maintaining linguistic meaning, and balancing vocabulary size."
+        }
       ]
     },
     {
       id: 'practical-application',
-      title: 'Practical Tokenization',
-      description: 'Using tokenizers in practice',
+      title: 'Practical Applications',
+      description: 'Learn how to use tokenization in real-world LLM applications.',
       steps: [
         {
           id: 'using-tokenizers',
@@ -443,13 +610,51 @@ graph LR
           ),
           codeExample: "# Counting tokens for cost estimation\nfrom transformers import AutoTokenizer\n\ntokenizer = AutoTokenizer.from_pretrained(\"gpt2\")\n\ndef estimate_cost(text, input_cost_per_1k=0.001, output_cost_per_1k=0.002, max_output_tokens=500):\n    input_tokens = len(tokenizer.encode(text))\n    \n    # Calculate costs\n    input_cost = (input_tokens / 1000) * input_cost_per_1k\n    max_output_cost = (max_output_tokens / 1000) * output_cost_per_1k\n    \n    print(f\"Input tokens: {input_tokens}\")\n    print(f\"Estimated input cost: ${input_cost:.4f}\")\n    print(f\"Maximum output cost: ${max_output_cost:.4f}\")\n    print(f\"Total maximum cost: ${input_cost + max_output_cost:.4f}\")\n    \n    return input_tokens\n\nsample_text = \"This is a sample text to estimate token count and API cost.\"\nestimate_cost(sample_text)"
         }
+      ],
+      quiz: [
+        {
+          id: 'practice-q1',
+          question: "Why is it important to use the same tokenizer for inference as was used during training?",
+          options: [
+            "To maintain consistent copyright licensing",
+            "To ensure input is processed the same way the model expects",
+            "To improve processing speed",
+            "It doesn't matter which tokenizer is used"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Using the same tokenizer for inference as training is crucial because the model learned patterns based on specific token representations. Different tokenizers produce different token sequences for the same text, which would result in inputs the model wasn't trained to understand."
+        },
+        {
+          id: 'practice-q2',
+          question: "What method would you use to estimate the cost of processing a large document with an API-based LLM?",
+          options: [
+            "Count the words and multiply by 0.75",
+            "Use the tokenizer to count tokens in the document",
+            "Estimate based on character count only",
+            "Run a small test and extrapolate"
+          ],
+          correctOptionIndex: 1,
+          explanation: "The most accurate way to estimate processing cost is to use the same tokenizer as the model to count the exact number of tokens in your document. Since pricing is typically per token, this gives you a precise measure of what processing will cost."
+        },
+        {
+          id: 'practice-q3',
+          question: "Which practice helps reduce token usage when working with large documents?",
+          options: [
+            "Always using the full document regardless of length",
+            "Removing all whitespace to save tokens",
+            "Chunking the document strategically and using context windows",
+            "Converting all text to lowercase"
+          ],
+          correctOptionIndex: 2,
+          explanation: "Chunking documents strategically is the best approach for reducing token usage. By breaking large documents into relevant sections and maintaining necessary context, you can process only what's needed rather than sending the entire document in every request."
+        }
       ]
     }
   ]
 };
 
 // Define the model architecture tutorial
-const ARCHITECTURE_TUTORIAL: Tutorial = {
+export const ARCHITECTURE_TUTORIAL: Tutorial = {
   id: 'model-architecture-101',
   title: 'Understanding Transformer Architecture',
   description: 'Learn how transformer-based language models are built and how they process information.',
@@ -628,17 +833,17 @@ graph TD
 };
 
 // Define the model training tutorial
-const TRAINING_TUTORIAL: Tutorial = {
-  id: 'model-training-101',
-  title: 'Training Language Models',
-  description: 'Learn the process of training large language models, from data preparation to optimization techniques.',
-  difficulty: 'advanced',
-  estimatedTime: '60 minutes',
+export const TRAINING_TUTORIAL: Tutorial = {
+  id: 'training',
+  title: 'LLM Training and Optimization',
+  description: 'Learn how large language models are trained from start to finish, exploring key techniques and optimization strategies.',
+  difficulty: 'intermediate',
+  estimatedTime: '45 minutes',
   sections: [
     {
       id: 'training-process',
       title: 'The Training Process',
-      description: 'Understanding the end-to-end training pipeline',
+      description: 'Understanding how large language models are trained from start to finish.',
       steps: [
         {
           id: 'data-preparation',
@@ -675,9 +880,54 @@ flowchart TB
       Chunking --> Storage["Processed Data Storage<br>Efficient Format"]
     end
           `
+        }
+      ],
+      quiz: [
+        {
+          id: 'training-process-q1',
+          question: "What is the first step in the LLM training process?",
+          options: [
+            "Model architecture design",
+            "Data collection and preparation",
+            "Defining the loss function",
+            "Setting up distributed training"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Data collection and preparation is the first step in training an LLM. Before any modeling can begin, you need a large corpus of text that's cleaned, deduplicated, and preprocessed into the appropriate format."
         },
         {
-          id: 'training-objectives',
+          id: 'training-process-q2',
+          question: "Why is tokenization an essential part of data preparation?",
+          options: [
+            "It compresses the data to save storage space",
+            "It converts text into numerical tokens the model can process",
+            "It filters out inappropriate content",
+            "It translates text into English"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Tokenization converts text into numerical tokens that the model can process. Neural networks operate on numerical data, not raw text, so tokenization bridges this gap by transforming text into token IDs from a fixed vocabulary."
+        },
+        {
+          id: 'training-process-q3',
+          question: "What typically happens after the initial pretraining of an LLM?",
+          options: [
+            "Immediate deployment to production",
+            "Fine-tuning and alignment",
+            "Deleting the training data",
+            "Reducing the model size"
+          ],
+          correctOptionIndex: 1,
+          explanation: "After pretraining, models typically undergo fine-tuning and alignment phases. Fine-tuning adapts the model to specific tasks or domains, while alignment ensures the model follows instructions, is helpful, harmless, and honest through techniques like RLHF."
+        }
+      ]
+    },
+    {
+      id: 'training-objectives-section',
+      title: 'Training Objectives', 
+      description: 'Learn about different pretraining objectives used to train language models.',
+      steps: [
+        {
+          id: 'training-objectives-intro',
           title: 'Training Objectives',
           content: (
             <div>
@@ -718,93 +968,130 @@ graph TD
     SC_Out --> SC_Use["Good for:<br>- Translation<br>- Summarization<br>- QA"]
           `
         }
+      ],
+      quiz: [
+        {
+          id: 'training-objectives-q1',
+          question: "What is autoregressive pretraining?",
+          options: [
+            "Training a model to predict previous tokens from future ones",
+            "Training a model to predict the next token given previous tokens",
+            "Training a model to correct grammatical errors automatically",
+            "Training a model to compress text efficiently"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Autoregressive pretraining involves training a model to predict the next token in a sequence given all previous tokens. This approach is used in models like GPT and mimics the natural left-to-right reading process of text."
+        },
+        {
+          id: 'training-objectives-q2',
+          question: "How does masked language modeling differ from autoregressive pretraining?",
+          options: [
+            "It predicts tokens in both directions (bidirectional context)",
+            "It only uses the first and last tokens of a sequence",
+            "It focuses exclusively on rare words",
+            "It doesn't use neural networks"
+          ],
+          correctOptionIndex: 0,
+          explanation: "Masked language modeling (used in models like BERT) predicts masked tokens using context from both directions, making it bidirectional. This differs from autoregressive models that can only use previous tokens to predict the next one."
+        },
+        {
+          id: 'training-objectives-q3',
+          question: "Which pretraining objective is most commonly used in modern decoder-only LLMs like GPT?",
+          options: [
+            "Masked language modeling",
+            "Span corruption",
+            "Next sentence prediction",
+            "Autoregressive (next token prediction)"
+          ],
+          correctOptionIndex: 3,
+          explanation: "Autoregressive (next token prediction) is the primary pretraining objective for decoder-only models like GPT. These models are trained to predict the next token given all previous tokens in the sequence, which enables them to generate coherent text continuations."
+        }
       ]
     },
     {
-      id: 'optimization-techniques',
+      id: 'optimization-section',
       title: 'Optimization Techniques',
-      description: 'Advanced methods to improve training',
+      description: 'Explore strategies to make training more efficient and effective.',
       steps: [
         {
-          id: 'distributed-training',
-          title: 'Distributed Training',
+          id: 'optimization-intro',
+          title: 'Optimization Techniques for Training',
           content: (
             <div>
               <p>
-                Large language models are too big to fit on a single GPU, requiring distributed training approaches:
+                Training large language models requires sophisticated optimization techniques:
               </p>
               <ul>
-                <li><strong>Data Parallelism:</strong> Split batches across multiple GPUs</li>
-                <li><strong>Model Parallelism:</strong> Split model layers across multiple GPUs</li>
-                <li><strong>Pipeline Parallelism:</strong> Different stages of the forward/backward pass run on different devices</li>
-                <li><strong>Tensor Parallelism:</strong> Split individual operations across devices</li>
+                <li><strong>Data Parallelism:</strong> Split data across multiple GPUs</li>
+                <li><strong>Model Parallelism:</strong> Split model across multiple GPUs</li>
+                <li><strong>Mixed Precision:</strong> Use lower precision for calculations (FP16, BF16)</li>
+                <li><strong>Gradient Checkpointing:</strong> Trade computation for memory efficiency</li>
+                <li><strong>Gradient Accumulation:</strong> Simulate larger batch sizes</li>
               </ul>
               <p>
-                Modern frameworks like DeepSpeed, Megatron-LM, and PyTorch FSDP help implement these strategies.
-              </p>
-            </div>
-          ),
-          mermaidDiagram: `
-graph TB
-    subgraph "Distributed Training Strategies"
-      subgraph "Data Parallelism"
-        D1["GPU 1<br>Batch 1<br>Full Model"] 
-        D2["GPU 2<br>Batch 2<br>Full Model"]
-        D3["GPU 3<br>Batch 3<br>Full Model"]
-        D4["GPU 4<br>Batch 4<br>Full Model"]
-        
-        D1 & D2 & D3 & D4 --> DG["Gradient Sync"]
-      end
-      
-      subgraph "Model Parallelism"
-        M1["GPU 1<br>Layers 1-6<br>Full Batch"]
-        M2["GPU 2<br>Layers 7-12<br>Full Batch"]
-        M3["GPU 3<br>Layers 13-18<br>Full Batch"]
-        M4["GPU 4<br>Layers 19-24<br>Full Batch"]
-        
-        M1 --> M2 --> M3 --> M4
-      end
-      
-      subgraph "Pipeline Parallelism"
-        P1["GPU 1<br>Layers 1-6<br>μBatch 1"] --> P2["GPU 2<br>Layers 7-12<br>μBatch 1"] 
-        P2 --> P3["GPU 3<br>Layers 13-18<br>μBatch 1"] --> P4["GPU 4<br>Layers 19-24<br>μBatch 1"]
-        
-        P1 --> P1_2["GPU 1<br>Layers 1-6<br>μBatch 2"]
-      end
-    end
-          `
-        },
-        {
-          id: 'mixed-precision',
-          title: 'Mixed Precision Training',
-          content: (
-            <div>
-              <p>
-                Mixed precision training uses lower precision formats (like FP16 or BF16) along with FP32 to:
-              </p>
-              <ul>
-                <li>Reduce memory usage by up to 50%</li>
-                <li>Speed up matrix multiplications on modern GPUs</li>
-                <li>Enable training of larger models or with larger batch sizes</li>
-              </ul>
-              <p>
-                Key techniques include loss scaling to prevent underflow and maintaining master weights in FP32.
+                These techniques make it possible to train models with billions of parameters.
               </p>
             </div>
           ),
           mermaidDiagram: `
 flowchart TB
-    subgraph "Mixed Precision Training"
-      FW["Forward Pass (FP16)"] --> Loss["Loss Computation (FP32)"]
-      Loss --> Scale["Loss Scaling (Prevent Underflow)"]
-      Scale --> BW["Backward Pass (FP16)"]
-      BW --> Unscale["Unscale Gradients"]
-      Unscale --> Check["Check for Inf/NaN"]
-      Check -->|Valid| Update["Update Master Weights (FP32)"]
-      Check -->|Invalid| Skip["Skip Update"]
-      Update --> Copy["Copy to FP16 Weights"]
+    subgraph "Distributed Training Strategies"
+      DP["Data Parallelism"] --> DP_Desc["Same model<br>Different data batches<br>Sync gradients"]
+      MP["Model Parallelism"] --> MP_Desc["Different model parts<br>Same data<br>Forward/backward coordination"]
+      PP["Pipeline Parallelism"] --> PP_Desc["Sequential model parts<br>Mini-batch bubbling<br>Reduced idle time"]
+      ZeRO["ZeRO Optimization"] --> ZeRO_Desc["Partition optimizer states<br>Partition gradients<br>Partition parameters"]
     end
           `
+        }
+      ],
+      quiz: [
+        {
+          id: 'optimization-q1',
+          question: "What is data parallelism in distributed training?",
+          options: [
+            "Splitting the model across multiple devices",
+            "Splitting the data across multiple devices",
+            "Training multiple different models simultaneously",
+            "Processing multiple batches at once on a single device"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Data parallelism splits the training data (batches) across multiple devices. Each device has a full copy of the model but processes different data samples, with gradients being synchronized periodically to update all model copies."
+        },
+        {
+          id: 'optimization-q2',
+          question: "Which technique reduces memory usage by storing activations at only certain layers during the forward pass?",
+          options: [
+            "Model parallelism",
+            "Mixed precision training",
+            "Gradient checkpointing",
+            "Gradient accumulation"
+          ],
+          correctOptionIndex: 2,
+          explanation: "Gradient checkpointing saves memory by storing activations at only certain layers during the forward pass and recomputing the intermediate activations during the backward pass. This trades additional computation for reduced memory usage."
+        },
+        {
+          id: 'optimization-q3',
+          question: "Why is mixed precision training beneficial?",
+          options: [
+            "It always improves model accuracy",
+            "It reduces memory usage and speeds up training",
+            "It simplifies the model architecture",
+            "It enables training without GPUs"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Mixed precision training uses lower precision formats (like FP16) alongside FP32, reducing memory usage and often speeding up training. Modern GPUs have specialized hardware (like NVIDIA's Tensor Cores) that perform operations much faster in FP16 than in FP32."
+        },
+        {
+          id: 'optimization-q4',
+          question: "What problem does gradient accumulation solve?",
+          options: [
+            "Slow convergence rates",
+            "Training with larger effective batch sizes than would fit in memory",
+            "Model overfitting",
+            "Vanishing gradient problems"
+          ],
+          correctOptionIndex: 1,
+          explanation: "Gradient accumulation allows training with larger effective batch sizes than would fit in memory. It works by accumulating gradients over multiple smaller batches before updating the model weights, effectively simulating a larger batch."
         }
       ]
     }
@@ -812,7 +1099,7 @@ flowchart TB
 };
 
 // Define the inference tutorial
-const INFERENCE_TUTORIAL: Tutorial = {
+export const INFERENCE_TUTORIAL: Tutorial = {
   id: 'inference-101',
   title: 'LLM Inference & Deployment',
   description: 'Learn how to efficiently deploy and use trained language models for inference.',
@@ -972,7 +1259,7 @@ sequenceDiagram
 };
 
 // Define the array of available tutorials
-const TUTORIALS = [
+export const TUTORIALS = [
   TOKENIZATION_TUTORIAL,
   ARCHITECTURE_TUTORIAL,
   TRAINING_TUTORIAL,
@@ -981,9 +1268,50 @@ const TUTORIALS = [
 
 const TutorialsPage: React.FC = () => {
   const [selectedTutorial, setSelectedTutorial] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'catalog' | 'quizzes'>('catalog');
   
   // Get the selected tutorial object
   const activeTutorial = TUTORIALS.find(tutorial => tutorial.id === selectedTutorial);
+  
+  // Extract all quizzes for the QuizLibrary
+  const allQuizTopics = [
+    ...(TOKENIZATION_TUTORIAL.sections
+      .filter((section: TutorialSection) => section.quiz && section.quiz.length > 0)
+      .map((section: TutorialSection) => ({
+        id: `tokenization-${section.id}`,
+        title: `${TOKENIZATION_TUTORIAL.title}: ${section.title}`,
+        description: section.description,
+        questions: section.quiz || [],
+        difficulty: TOKENIZATION_TUTORIAL.difficulty
+      }))),
+    ...(ARCHITECTURE_TUTORIAL.sections
+      .filter((section: TutorialSection) => section.quiz && section.quiz.length > 0)
+      .map((section: TutorialSection) => ({
+        id: `architecture-${section.id}`,
+        title: `${ARCHITECTURE_TUTORIAL.title}: ${section.title}`,
+        description: section.description,
+        questions: section.quiz || [],
+        difficulty: ARCHITECTURE_TUTORIAL.difficulty
+      }))),
+    ...(TRAINING_TUTORIAL.sections
+      .filter((section: TutorialSection) => section.quiz && section.quiz.length > 0)
+      .map((section: TutorialSection) => ({
+        id: `training-${section.id}`,
+        title: `${TRAINING_TUTORIAL.title}: ${section.title}`,
+        description: section.description,
+        questions: section.quiz || [],
+        difficulty: TRAINING_TUTORIAL.difficulty
+      }))),
+    ...(INFERENCE_TUTORIAL.sections
+      .filter((section: TutorialSection) => section.quiz && section.quiz.length > 0)
+      .map((section: TutorialSection) => ({
+        id: `inference-${section.id}`,
+        title: `${INFERENCE_TUTORIAL.title}: ${section.title}`,
+        description: section.description,
+        questions: section.quiz || [],
+        difficulty: INFERENCE_TUTORIAL.difficulty
+      })))
+  ];
   
   // Render the tutorial catalog if no tutorial is selected
   const renderTutorialCatalog = () => (
@@ -993,26 +1321,45 @@ const TutorialsPage: React.FC = () => {
         Step-by-step tutorials to help you understand and build language models from scratch.
       </p>
       
-      <div className="tutorials-grid">
-        {TUTORIALS.map(tutorial => (
-          <div 
-            key={tutorial.id} 
-            className="tutorial-card"
-            onClick={() => setSelectedTutorial(tutorial.id)}
-          >
-            <h2>{tutorial.title}</h2>
-            <p>{tutorial.description}</p>
-            <div className="tutorial-meta">
-              <span className={`difficulty-badge ${tutorial.difficulty}`}>{tutorial.difficulty}</span>
-              <span className="time-badge">{tutorial.estimatedTime}</span>
-            </div>
-            <div className="sections-preview">
-              {tutorial.sections.length} sections · {tutorial.sections.reduce((total: number, section: TutorialSection) => total + section.steps.length, 0)} lessons
-            </div>
-            <button className="start-tutorial-button">Start Tutorial</button>
-          </div>
-        ))}
+      <div className="tutorial-tabs">
+        <button 
+          className={`tutorial-tab ${activeTab === 'catalog' ? 'active' : ''}`}
+          onClick={() => setActiveTab('catalog')}
+        >
+          Tutorials
+        </button>
+        <button 
+          className={`tutorial-tab ${activeTab === 'quizzes' ? 'active' : ''}`}
+          onClick={() => setActiveTab('quizzes')}
+        >
+          Quizzes
+        </button>
       </div>
+      
+      {activeTab === 'catalog' ? (
+        <div className="tutorials-grid">
+          {TUTORIALS.map(tutorial => (
+            <div 
+              key={tutorial.id} 
+              className="tutorial-card"
+              onClick={() => setSelectedTutorial(tutorial.id)}
+            >
+              <h2>{tutorial.title}</h2>
+              <p>{tutorial.description}</p>
+              <div className="tutorial-meta">
+                <span className={`difficulty-badge ${tutorial.difficulty}`}>{tutorial.difficulty}</span>
+                <span className="time-badge">{tutorial.estimatedTime}</span>
+              </div>
+              <div className="sections-preview">
+                {tutorial.sections.length} sections · {tutorial.sections.reduce((total: number, section: TutorialSection) => total + section.steps.length, 0)} lessons
+              </div>
+              <button className="start-tutorial-button">Start Tutorial</button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <QuizLibrary quizTopics={allQuizTopics} />
+      )}
     </div>
   );
   

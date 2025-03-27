@@ -120,14 +120,6 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
     <div className="tokenization-visualizer">
       <h3>Tokenization Process</h3>
       
-      <div className="tutorial-link-banner">
-        <Link to="/tutorials" className="tutorial-link">
-          <span className="tutorial-icon">📚</span> 
-          Take our comprehensive tokenization tutorial
-          <span className="arrow-icon">→</span>
-        </Link>
-      </div>
-      
       <div className="tokenization-input">
         <input
           type="text"

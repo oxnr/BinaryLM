@@ -460,6 +460,69 @@ Encodes relative distance between tokens rather than absolute positions. Used in
 #### 3.4.3 Rotary Position Embeddings (RoPE)
 Used in models like GPT-NeoX and newer GPT variants, applies a rotation to the embedding space based on position. Better handles extrapolation to longer sequences.
 
+### 3.5 Parameters, Weights, and the Embedding Matrix
+
+#### 3.5.1 What Are Model Parameters?
+Parameters in a language model are the learnable values that are adjusted during training to optimize the model's performance. These include:
+
+- **Weights**: Values in dense or convolutional layers that determine how inputs are transformed
+- **Biases**: Offset values added to the output of a layer
+- **Embedding matrices**: Special weight matrices that convert tokens to vectors
+
+When we refer to a model's "size" (e.g., "GPT-3 has 175 billion parameters"), we're counting the total number of these learnable values. The parameter count is a key factor in a model's capability and computational requirements.
+
+```mermaid
+graph LR
+    subgraph "LLM Parameters Overview"
+        Parameters["Total Parameters"] --> EmbedMatrix["Embedding Matrix<br>(~15-30% of parameters)"]
+        Parameters --> AttnParams["Attention Parameters<br>(Q, K, V projections)"]
+        Parameters --> FFNParams["Feed-Forward Network<br>(Usually largest portion)"]
+        Parameters --> LNParams["Layer Normalization<br>(Small portion)"]
+    end
+```
+
+#### 3.5.2 Weights vs. Parameters
+While often used interchangeably, there's a subtle distinction:
+
+- **Parameters** is the broader term encompassing all learnable values
+- **Weights** specifically refers to the multiplicative parameters (as opposed to biases)
+
+In practical discussions, "weights" often means the entire set of model parameters, particularly when discussing saving or loading model checkpoints (often called "weights files").
+
+#### 3.5.3 The Embedding Matrix Explained
+The embedding matrix is one of the largest parameter collections in a model:
+
+```mermaid
+graph TD
+    subgraph "Embedding Matrix Structure"
+        Vocab["Vocabulary<br>(e.g., 50,000 tokens)"] --> Matrix["Embedding Matrix<br>(50,000 × d_model)"]
+        Matrix --> V1["Vector for token 1<br>(d_model dimensions)"]
+        Matrix --> V2["Vector for token 2<br>(d_model dimensions)"]
+        Matrix --> V3["..."]
+        Matrix --> Vn["Vector for token n<br>(d_model dimensions)"]
+    end
+```
+
+The embedding matrix:
+- Has dimensions [vocab_size × embedding_dimension]
+- Contains one vector per token in the vocabulary
+- Is initialized randomly and learned during training
+- Encodes semantic relationships between tokens in a continuous vector space
+- Is **not** just a one-hot encoding of words, but dense vectors learned to capture meaning
+
+A model uses this matrix as a lookup table: when processing token ID 234, it retrieves row 234 from the embedding matrix. The resulting embedding vector represents that token's meaning in a form the model can process.
+
+In most models, both the input embedding matrix and the output projection (which converts final representations back to vocabulary logits) often share the same weights, reducing the total parameter count.
+
+#### 3.5.4 Scaling Relationship
+The relationship between parameters and model performance follows scaling laws:
+
+- Increasing parameters generally improves performance (with sufficient training data)
+- Performance scales as a power law with parameter count
+- Doubling parameters typically gives diminishing (but predictable) improvements
+
+This relationship has driven the trend toward increasingly large models, from millions to trillions of parameters, though efficient architectures can sometimes achieve better performance with fewer parameters.
+
 ## 4. Attention Mechanism: The Heart of Transformers
 
 ### 4.1 Why Attention Matters
