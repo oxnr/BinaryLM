@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './InferencePage.css';
 
 const InferencePage: React.FC = () => {
@@ -47,6 +48,14 @@ const InferencePage: React.FC = () => {
       <p className="page-description">
         Test the language model by providing a prompt and generating text. This simulates how an LLM processes your input and generates responses.
       </p>
+      
+      <div className="tutorial-link-banner">
+        <Link to="/tutorials" className="tutorial-link">
+          <span className="tutorial-icon">📚</span> 
+          Explore LLM inference techniques in our detailed tutorial
+          <span className="arrow-icon">→</span>
+        </Link>
+      </div>
       
       <div className="model-selection">
         <h3>Select Model</h3>

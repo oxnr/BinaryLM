@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './ModelTraining.css';
 
@@ -1228,12 +1228,17 @@ const ModelTraining: React.FC = () => {
     <div className="model-training-page">
       <div className="page-header">
         <h1>Train Your Language Model</h1>
-        <p>Create, train and evaluate custom language models with your own data</p>
+        <p>Configure and train a language model with different parameters and datasets</p>
       </div>
       
-      {/* Global progress bar - always visible */}
-      {renderProgressBar()}
-      
+      <div className="tutorial-link-banner">
+        <Link to="/tutorials" className="tutorial-link">
+          <span className="tutorial-icon">📚</span> 
+          Learn about LLM training with our comprehensive tutorial
+          <span className="arrow-icon">→</span>
+        </Link>
+      </div>
+
       <div className="tab-navigation">
         <button 
           className={`tab-button ${activeTab === 'explanation' ? 'active' : ''}`}

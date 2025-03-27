@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import TokenizerExplorer from './pages/TokenizerExplorer';
 import InferencePage from './pages/InferencePage';
 import DocsPage from './pages/DocsPage';
+import TutorialsPage from './pages/TutorialsPage';
 import './App.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/inference" element={<InferencePage />} />
             <Route path="/docs" element={<DocsPage />} />
             <Route path="/docs/:docId" element={<DocsPage />} />
+            <Route path="/tutorials" element={<TutorialsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

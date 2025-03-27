@@ -266,4 +266,36 @@
 
 .github-link a:hover {
   opacity: 0.8;
+}
+
+.tutorial-link-banner {
+  margin-bottom: 25px;
+  background-color: #f0f7ff;
+  border: 1px solid #d0e4ff;
+  border-radius: 6px;
+  padding: 12px 15px;
+}
+
+.tutorial-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #0066cc;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.tutorial-link:hover {
+  color: #004999;
+  text-decoration: underline;
+}
+
+.tutorial-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.arrow-icon {
+  margin-left: auto;
+  font-size: 1.2rem;
 } 

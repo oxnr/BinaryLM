@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import TransformerVisualizer from '../components/TransformerVisualizer';
 import './ModelArchitecture.css';
 
@@ -33,6 +34,14 @@ const ModelArchitecture: React.FC = () => {
   return (
     <div>
       <h1>Model Architecture Explorer</h1>
+      
+      <div className="tutorial-link-banner">
+        <Link to="/tutorials" className="tutorial-link">
+          <span className="tutorial-icon">📚</span> 
+          Learn more with our transformer architecture tutorial
+          <span className="arrow-icon">→</span>
+        </Link>
+      </div>
       
       <div className="architecture-selector-container">
         <div className="architecture-options">

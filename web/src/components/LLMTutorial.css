@@ -1,0 +1,385 @@
+.llm-tutorial {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #fafafa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.tutorial-header {
+  margin-bottom: 40px;
+}
+
+.tutorial-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.tutorial-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.tutorial-meta {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.tutorial-difficulty, .tutorial-time {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.difficulty-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.difficulty-badge.beginner {
+  background-color: #e3f5e4;
+  color: #2e7d32;
+}
+
+.difficulty-badge.intermediate {
+  background-color: #e3f0fc;
+  color: #1565c0;
+}
+
+.difficulty-badge.advanced {
+  background-color: #fbe9e7;
+  color: #c62828;
+}
+
+.time-value {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tutorial-progress {
+  margin-top: 20px;
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #111;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: right;
+}
+
+.tutorial-content {
+  display: flex;
+  gap: 40px;
+}
+
+.tutorial-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.toc-toggle {
+  margin-bottom: 20px;
+}
+
+.view-toggle {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.view-toggle:hover {
+  background-color: #eee;
+}
+
+.tutorial-toc {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.toc-section {
+  border-bottom: 1px solid #eee;
+}
+
+.toc-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  padding: 12px 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.section-title:hover {
+  background-color: #f5f5f5;
+}
+
+.section-title.active {
+  background-color: #f5f5f5;
+  border-left: 3px solid #111;
+}
+
+.section-steps {
+  padding: 5px 0;
+  background-color: #f9f9f9;
+}
+
+.step-title {
+  padding: 8px 15px 8px 25px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.step-title:hover {
+  background-color: #f0f0f0;
+}
+
+.step-title.active {
+  background-color: #f0f0f0;
+  font-weight: 500;
+}
+
+.step-title.completed {
+  color: #666;
+}
+
+.check-mark {
+  position: absolute;
+  right: 20px;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.tutorial-step-content {
+  flex: 1;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 30px;
+}
+
+.step-container {
+  width: 100%;
+}
+
+.step-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  border-bottom: 2px solid #f5f5f5;
+  padding-bottom: 15px;
+}
+
+.step-content {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.step-content p {
+  margin-bottom: 20px;
+}
+
+.step-content ul, .step-content ol {
+  margin-bottom: 20px;
+  padding-left: 25px;
+}
+
+.step-content li {
+  margin-bottom: 8px;
+}
+
+.step-image {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.step-image img {
+  max-width: 100%;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.step-code {
+  margin: 30px 0;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #333;
+}
+
+.code-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.copy-button {
+  background-color: #444;
+  border: 1px solid #555;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #eee;
+}
+
+.copy-button:hover {
+  background-color: #555;
+}
+
+.step-code pre {
+  margin: 0;
+  padding: 15px;
+  overflow-x: auto;
+}
+
+.step-code code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #eee;
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.prev-button, .next-button {
+  padding: 10px 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.prev-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.prev-button:hover:not(:disabled) {
+  background-color: #eee;
+}
+
+.prev-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.next-button {
+  background-color: #111;
+  color: white;
+}
+
+.next-button:hover {
+  background-color: #333;
+}
+
+@media (max-width: 900px) {
+  .tutorial-content {
+    flex-direction: column;
+  }
+  
+  .tutorial-sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .llm-tutorial {
+    padding: 20px;
+  }
+  
+  .tutorial-header h1 {
+    font-size: 2rem;
+  }
+  
+  .tutorial-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.step-mermaid {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.step-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  color: #e74c3c;
+  font-weight: 500;
+  padding: 15px;
+  text-align: center;
+} 

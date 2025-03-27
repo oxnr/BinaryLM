@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './TokenizationVisualizer.css';
 
 // Mock data types
@@ -118,6 +119,14 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
   return (
     <div className="tokenization-visualizer">
       <h3>Tokenization Process</h3>
+      
+      <div className="tutorial-link-banner">
+        <Link to="/tutorials" className="tutorial-link">
+          <span className="tutorial-icon">📚</span> 
+          Take our comprehensive tokenization tutorial
+          <span className="arrow-icon">→</span>
+        </Link>
+      </div>
       
       <div className="tokenization-input">
         <input
