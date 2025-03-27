@@ -640,11 +640,45 @@ button:disabled {
 
 .training-chart {
   margin-bottom: 25px;
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .chart-title {
   font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.training-docs {
+  margin-top: 40px;
+}
+
+.tips-card {
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #eee;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tips-card h4 {
+  margin-top: 0;
   margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.tips-card p {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .placeholder-chart {

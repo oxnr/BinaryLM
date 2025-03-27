@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './ModelTraining.css';
 
 interface DatasetInfo {
@@ -126,6 +127,20 @@ const TRAINING_PROCESS_STEPS = [
   { id: 'evaluation', name: 'Model Evaluation', description: 'Test the trained model with prompts' },
 ];
 
+// Example training metrics history for the chart
+const EXAMPLE_TRAINING_HISTORY = [
+  { step: 0, trainLoss: 4.5, valLoss: 5.2, perplexity: 90.2 },
+  { step: 500, trainLoss: 3.8, valLoss: 4.5, perplexity: 77.5 },
+  { step: 1000, trainLoss: 3.2, valLoss: 3.9, perplexity: 65.1 },
+  { step: 1500, trainLoss: 2.9, valLoss: 3.4, perplexity: 54.3 },
+  { step: 2000, trainLoss: 2.7, valLoss: 3.1, perplexity: 45.6 },
+  { step: 2500, trainLoss: 2.5, valLoss: 2.9, perplexity: 39.8 },
+  { step: 3000, trainLoss: 2.3, valLoss: 2.8, perplexity: 34.9 },
+  { step: 3500, trainLoss: 2.2, valLoss: 2.6, perplexity: 31.2 },
+  { step: 4000, trainLoss: 2.1, valLoss: 2.6, perplexity: 28.7 },
+  { step: 4500, trainLoss: 2.0, valLoss: 2.5, perplexity: 26.1 },
+];
+
 const ModelTraining: React.FC = () => {
   const [datasets, setDatasets] = useState<DatasetInfo[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<string>('');
@@ -150,6 +165,7 @@ const ModelTraining: React.FC = () => {
   const [customResponse, setCustomResponse] = useState<string>('');
   const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [fullTrainingProgress, setFullTrainingProgress] = useState<number>(0);
+  const [trainingHistory, setTrainingHistory] = useState<{[key: string]: any[]}>({});
   
   const navigate = useNavigate();
 
@@ -461,6 +477,54 @@ const ModelTraining: React.FC = () => {
       setIsEvaluating(false);
     }, 2000);
   }, []);
+  
+  // Mock function to fetch training metrics
+  const fetchTrainingMetrics = useCallback((jobId: string) => {
+    // In a real implementation, this would connect to an API to get updated metrics
+    if (!trainingHistory[jobId]) {
+      setTrainingHistory(prev => ({
+        ...prev,
+        [jobId]: [...EXAMPLE_TRAINING_HISTORY]
+      }));
+    } else {
+      // Simulate getting new data points
+      const lastStep = trainingHistory[jobId][trainingHistory[jobId].length - 1].step;
+      const newStep = lastStep + 500;
+      
+      if (newStep <= 10000) {
+        // Add a new data point with slight variation
+        const newTrainLoss = Math.max(1.8, trainingHistory[jobId][trainingHistory[jobId].length - 1].trainLoss * (0.95 + Math.random() * 0.05));
+        const newValLoss = Math.max(2.2, trainingHistory[jobId][trainingHistory[jobId].length - 1].valLoss * (0.97 + Math.random() * 0.03));
+        const newPerplexity = Math.max(20, trainingHistory[jobId][trainingHistory[jobId].length - 1].perplexity * (0.94 + Math.random() * 0.06));
+        
+        setTrainingHistory(prev => ({
+          ...prev,
+          [jobId]: [
+            ...prev[jobId],
+            {
+              step: newStep,
+              trainLoss: newTrainLoss,
+              valLoss: newValLoss,
+              perplexity: newPerplexity
+            }
+          ]
+        }));
+      }
+    }
+  }, [trainingHistory]);
+  
+  // Fetch metrics for active jobs
+  useEffect(() => {
+    if (activeJobs.length > 0) {
+      const interval = setInterval(() => {
+        activeJobs.forEach(job => {
+          fetchTrainingMetrics(job.id);
+        });
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [activeJobs, fetchTrainingMetrics]);
   
   // Render the full training process progress bar
   const renderProgressBar = () => (
@@ -815,6 +879,72 @@ const ModelTraining: React.FC = () => {
     </div>
   );
   
+  // Render training metrics chart
+  const renderTrainingChart = (jobId: string) => {
+    const data = trainingHistory[jobId] || [];
+    
+    return (
+      <div className="training-chart">
+        <div className="chart-title">Training Progress</div>
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart
+              data={data}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="step" 
+                label={{ value: 'Training Steps', position: 'insideBottomRight', offset: -5 }} 
+              />
+              <YAxis 
+                yAxisId="left"
+                label={{ value: 'Loss', angle: -90, position: 'insideLeft' }} 
+              />
+              <YAxis 
+                yAxisId="right" 
+                orientation="right" 
+                domain={['auto', 'auto']}
+                label={{ value: 'Perplexity', angle: 90, position: 'insideRight' }} 
+              />
+              <Tooltip formatter={(value: any) => typeof value === 'number' ? value.toFixed(3) : value} />
+              <Legend />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="trainLoss" 
+                name="Training Loss" 
+                stroke="#0070f3" 
+                activeDot={{ r: 8 }} 
+              />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="valLoss" 
+                name="Validation Loss" 
+                stroke="#ff0000" 
+                strokeDasharray="5 5" 
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="perplexity" 
+                name="Perplexity" 
+                stroke="#00c853" 
+                dot={{ r: 3 }} 
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+  
   // Render training tab
   const renderTrainingTab = () => (
     <div className="training-tab">
@@ -879,32 +1009,7 @@ const ModelTraining: React.FC = () => {
                 </div>
               </div>
               
-              <div className="training-chart">
-                <div className="chart-title">Training Progress</div>
-                <div className="placeholder-chart">
-                  <svg width="100%" height="100%" viewBox="0 0 500 200" preserveAspectRatio="none">
-                    <path d="M0,200 C50,180 100,100 150,90 C200,80 250,120 300,100 C350,80 400,60 450,50 L500,30" 
-                          stroke="#0070f3" 
-                          strokeWidth="3" 
-                          fill="none" />
-                    <path d="M0,200 C50,190 100,150 150,130 C200,120 250,140 300,130 C350,120 400,100 450,90 L500,70" 
-                          stroke="#ff0000" 
-                          strokeWidth="2" 
-                          strokeDasharray="5,5" 
-                          fill="none" />
-                  </svg>
-                  <div className="chart-legend">
-                    <div className="legend-item">
-                      <div className="legend-color" style={{backgroundColor: "#0070f3"}}></div>
-                      <div>Training Loss</div>
-                    </div>
-                    <div className="legend-item">
-                      <div className="legend-color" style={{backgroundColor: "#ff0000"}}></div>
-                      <div>Validation Loss</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {renderTrainingChart(job.id)}
               
               <div className="job-actions">
                 <button className="view-button">View Details</button>
@@ -952,6 +1057,22 @@ const ModelTraining: React.FC = () => {
         ) : (
           <div className="no-models-message">No completed models yet</div>
         )}
+      </div>
+      
+      <div className="training-docs">
+        <h3>Training Tips</h3>
+        <div className="tips-card">
+          <h4>Monitor your training loss</h4>
+          <p>The training loss should generally decrease over time. If it plateaus, you may need to adjust your learning rate or architecture.</p>
+        </div>
+        <div className="tips-card">
+          <h4>Watch for overfitting</h4>
+          <p>If validation loss increases while training loss continues to decrease, your model may be overfitting to the training data.</p>
+        </div>
+        <div className="tips-card">
+          <h4>Perplexity explained</h4>
+          <p>Perplexity is a measure of how well the model predicts the data. Lower values indicate better performance.</p>
+        </div>
       </div>
     </div>
   );

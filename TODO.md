@@ -33,7 +33,7 @@
 - [x] Connect frontend to backend API
 - [x] Implement tokenizer visualization API endpoint
 - [x] Implement training dashboard
-- [ ] Add training metrics charts with real-time updates
+- [x] Add training metrics charts with real-time updates
 - [ ] Create step-by-step guided tutorials for each LLM concept
 - [ ] Add interactive animations showing data flow through model
 - [ ] Implement explainable AI features to visualize attention patterns
