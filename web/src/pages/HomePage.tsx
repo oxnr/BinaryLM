@@ -218,6 +218,13 @@ const HomePage: React.FC = () => {
               <p>Generate completions with your trained models and visualize the process.</p>
             </div>
           </Link>
+          
+          <Link to="/notebooks" className="feature-card-link">
+            <div className="feature-card">
+              <h3>Jupyter Notebooks</h3>
+              <p>End-to-end implementation examples showing how to build and fine-tune language models from scratch.</p>
+            </div>
+          </Link>
         </div>
       </section>
     </div>
