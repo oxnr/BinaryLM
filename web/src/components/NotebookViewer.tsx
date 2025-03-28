@@ -16,13 +16,54 @@ const NotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, title }) 
     const fetchNotebook = async () => {
       try {
         setLoading(true);
+        console.log(`Fetching notebook from: ${notebookPath}`);
+        
         const response = await fetch(notebookPath);
         if (!response.ok) {
-          throw new Error(`Failed to fetch notebook from ${notebookPath}`);
+          throw new Error(`Failed to fetch notebook from ${notebookPath}: ${response.statusText}`);
         }
-        const data = await response.json();
-        setNotebook(data);
-        setError(null);
+        
+        const text = await response.text();
+        console.log(`Received data length: ${text.length} characters`);
+        
+        if (!text || text.trim() === '') {
+          throw new Error('Received empty response');
+        }
+        
+        // Create a synthetic notebook if we can't load the real one
+        try {
+          const data = JSON.parse(text);
+          setNotebook(data);
+          setError(null);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          
+          // Create a basic notebook structure for debugging
+          const fallbackNotebook = {
+            cells: [
+              {
+                cell_type: "markdown",
+                metadata: {},
+                source: [
+                  "# Unable to load notebook\n",
+                  "There was an error loading the notebook from the server. Please try again later or download the notebooks from GitHub."
+                ]
+              }
+            ],
+            metadata: {
+              kernelspec: {
+                display_name: "Python 3",
+                language: "python",
+                name: "python3"
+              }
+            },
+            nbformat: 4,
+            nbformat_minor: 5
+          };
+          
+          setNotebook(fallbackNotebook);
+          setError(`Failed to parse notebook JSON: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+        }
       } catch (err) {
         console.error('Error loading notebook:', err);
         setError(`Failed to load notebook: ${err instanceof Error ? err.message : String(err)}`);
@@ -49,11 +90,14 @@ const NotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, title }) 
         <div className="notebook-error">
           <h3>Error</h3>
           <p>{error}</p>
-          <p>Please make sure the notebook exists and is correctly formatted.</p>
+          <p>
+            Please make sure the notebook exists and is correctly formatted.
+            You can download the notebooks directly from the <a href="https://github.com/oxnr/BinaryLM/tree/main/notebooks" target="_blank" rel="noopener noreferrer">GitHub repository</a>.
+          </p>
         </div>
       )}
       
-      {!loading && !error && notebook && (
+      {!loading && notebook && (
         <div className="notebook-container">
           <JupyterNotebook 
             rawIpynb={notebook} 

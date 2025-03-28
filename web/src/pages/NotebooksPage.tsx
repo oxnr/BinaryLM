@@ -21,6 +21,12 @@ const AVAILABLE_NOTEBOOKS: Notebook[] = [
     title: 'Building LMs with the Transformers Library',
     description: 'Learn how to leverage the Hugging Face Transformers library to fine-tune and use pre-trained language models.',
     path: '/notebooks/Building_with_Transformers.ipynb'
+  },
+  {
+    id: 'sample-notebook',
+    title: 'Sample Notebook',
+    description: 'A basic sample notebook to demonstrate the notebook viewer functionality.',
+    path: '/notebooks/sample_notebook.ipynb'
   }
 ];
 
