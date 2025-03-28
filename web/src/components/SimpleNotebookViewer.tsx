@@ -33,6 +33,30 @@ const SimpleNotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, tit
     return `${window.location.origin}/${cleanPath}`;
   };
 
+  // Get github URLs for the notebook
+  const getGitHubUrl = (path: string) => {
+    const repoOwner = 'oxnr';
+    const repoName = 'BinaryLM';
+    const branch = 'main';
+    const notebookPath = path.replace('notebooks/', '');
+    return `https://github.com/${repoOwner}/${repoName}/blob/${branch}/notebooks/${notebookPath}`;
+  };
+
+  // Get Google Colab URL for the notebook
+  const getColabUrl = (path: string) => {
+    const githubUrl = getGitHubUrl(path);
+    return `https://colab.research.google.com/github/oxnr/BinaryLM/blob/main/notebooks/${path.replace('notebooks/', '')}`;
+  };
+
+  // Get Binder URL for the notebook
+  const getBinderUrl = (path: string) => {
+    const repoOwner = 'oxnr';
+    const repoName = 'BinaryLM';
+    const branch = 'main';
+    const notebookPath = path.replace('notebooks/', '');
+    return `https://mybinder.org/v2/gh/${repoOwner}/${repoName}/${branch}?filepath=notebooks/${notebookPath}`;
+  };
+
   useEffect(() => {
     const fetchNotebook = async () => {
       try {
@@ -91,7 +115,7 @@ const SimpleNotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, tit
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/`([^`]+)`/g, '<code>$1</code>')
             .replace(/```([a-z]*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
-            .replace(/^\- (.*$)/gm, '<li>$1</li>').replace(/<\/li>\n<li>/g, '</li><li>')
+            .replace(/^- (.*$)/gm, '<li>$1</li>').replace(/<\/li>\n<li>/g, '</li><li>')
             .replace(/^\d+\. (.*$)/gm, '<li>$1</li>').replace(/<\/li>\n<li>/g, '</li><li>')
             .replace(/\n\n/g, '<br/><br/>')
         }} 
@@ -150,6 +174,46 @@ const SimpleNotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, tit
   return (
     <div className="notebook-viewer">
       {title && <h1 className="notebook-title">{title}</h1>}
+      
+      <div className="notebook-actions">
+        <a 
+          href={getColabUrl(notebookPath)} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="notebook-action-button colab-button"
+        >
+          <img 
+            src="https://colab.research.google.com/assets/colab-badge.svg" 
+            alt="Open In Colab" 
+            className="button-icon"
+          />
+          <span>Run in Colab</span>
+        </a>
+        <a 
+          href={getBinderUrl(notebookPath)} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="notebook-action-button binder-button"
+        >
+          <img 
+            src="https://mybinder.org/badge_logo.svg" 
+            alt="Launch Binder" 
+            className="button-icon"
+          />
+          <span>Launch in Binder</span>
+        </a>
+        <a 
+          href={getGitHubUrl(notebookPath)} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="notebook-action-button github-button"
+        >
+          <svg viewBox="0 0 16 16" width="16" height="16" className="button-icon">
+            <path fillRule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+          <span>View on GitHub</span>
+        </a>
+      </div>
       
       {loading && (
         <div className="notebook-loading">

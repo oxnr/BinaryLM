@@ -1,9 +1,12 @@
 import json
 import os
+import shutil
 
-# Ensure output directory exists
-output_dir = os.path.join('web', 'public', 'notebooks')
-os.makedirs(output_dir, exist_ok=True)
+# Ensure output directories exist
+output_dir_web = os.path.join('web', 'public', 'notebooks')
+output_dir_main = os.path.join('notebooks')
+os.makedirs(output_dir_web, exist_ok=True)
+os.makedirs(output_dir_main, exist_ok=True)
 
 # Basic sample notebook
 sample_notebook = {
@@ -145,17 +148,39 @@ transformers_notebook = {
     "nbformat_minor": 5
 }
 
-# Write the notebooks to files
+# First check if we need to make simple empty files
 notebooks = {
     "sample_notebook.ipynb": sample_notebook,
     "Build_LM_From_Scratch.ipynb": lm_scratch_notebook,
     "Building_with_Transformers.ipynb": transformers_notebook
 }
 
+# Write the basic notebooks to files
 for filename, notebook in notebooks.items():
-    output_path = os.path.join(output_dir, filename)
-    with open(output_path, 'w', encoding='utf-8') as f:
+    output_path_web = os.path.join(output_dir_web, filename)
+    output_path_main = os.path.join(output_dir_main, filename)
+    
+    with open(output_path_web, 'w', encoding='utf-8') as f:
         json.dump(notebook, f, indent=2)
-    print(f"Created {output_path}")
+    
+    with open(output_path_main, 'w', encoding='utf-8') as f:
+        json.dump(notebook, f, indent=2)
+        
+    print(f"Created {output_path_web}")
+    print(f"Created {output_path_main}")
+
+# Copy the 5-minute demo notebook if it exists in the main directory
+demo_notebook_main = os.path.join(output_dir_main, "LLM_5min_Demo.ipynb")
+demo_notebook_web = os.path.join(output_dir_web, "LLM_5min_Demo.ipynb")
+
+# If the demo notebook exists in main directory but not in web/public, copy it
+if os.path.exists(demo_notebook_main) and not os.path.exists(demo_notebook_web):
+    shutil.copy2(demo_notebook_main, demo_notebook_web)
+    print(f"Copied LLM_5min_Demo.ipynb to {demo_notebook_web}")
+elif not os.path.exists(demo_notebook_main) and os.path.exists(demo_notebook_web):
+    shutil.copy2(demo_notebook_web, demo_notebook_main)
+    print(f"Copied LLM_5min_Demo.ipynb to {demo_notebook_main}")
+elif not os.path.exists(demo_notebook_main) and not os.path.exists(demo_notebook_web):
+    print("Warning: LLM_5min_Demo.ipynb not found in either location!")
 
 print("All sample notebooks created successfully!") 

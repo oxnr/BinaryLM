@@ -11,6 +11,12 @@ interface Notebook {
 
 const AVAILABLE_NOTEBOOKS: Notebook[] = [
   {
+    id: 'llm-5min-demo',
+    title: 'Language Model in 5 Minutes',
+    description: 'A complete end-to-end demonstration of building a language model - from data to generation with visualizations.',
+    path: 'notebooks/LLM_5min_Demo.ipynb'
+  },
+  {
     id: 'build-lm-from-scratch',
     title: 'Building a Language Model from Scratch',
     description: 'Learn how to build a simple transformer-based language model from scratch using PyTorch.',
@@ -63,7 +69,7 @@ const NotebooksPage: React.FC = () => {
           <h1>Jupyter Notebooks</h1>
           <p className="notebooks-intro">
             These interactive notebooks demonstrate how to build language models from scratch and how to use existing libraries.
-            You can view them here or download to run them locally in Jupyter.
+            View them here or open them in Colab/Binder to run them interactively.
           </p>
           
           <div className="notebooks-grid">
