@@ -58,45 +58,127 @@
   overflow-x: auto;
 }
 
-/* Override default Jupyter notebook styles */
-.notebook-container pre {
+/* Custom simple notebook viewer styles */
+.cell {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+}
+
+.cell:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.markdown-cell h1 {
+  font-size: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.markdown-cell h2 {
+  font-size: 1.5rem;
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: #2c3e50;
+}
+
+.markdown-cell h3 {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+  color: #2c3e50;
+}
+
+.markdown-cell h4 {
+  font-size: 1.1rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;
+  color: #2c3e50;
+}
+
+.markdown-cell p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.markdown-cell ul, 
+.markdown-cell ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-cell li {
+  margin-bottom: 0.5rem;
+}
+
+.code-cell {
+  margin-top: 0.5rem;
+}
+
+.execution-count {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.code-block {
   background-color: #f8f9fa;
   padding: 1rem;
   border-radius: 0;
   overflow-x: auto;
+  margin: 0;
+  border: 1px solid #e0e0e0;
 }
 
-.notebook-container code {
+.code-cell code {
   font-family: 'JetBrains Mono', 'SF Mono', 'Courier New', Courier, monospace;
   font-size: 14px;
 }
 
-.notebook-container table {
-  border-collapse: collapse;
-  width: 100%;
+.cell-outputs {
+  margin-top: 0.5rem;
+}
+
+.output {
+  margin-top: 0.5rem;
+}
+
+.output-text {
+  background-color: #fcfcfc;
+  padding: 0.5rem;
+  border: 1px solid #f0f0f0;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.markdown-cell code {
+  background-color: #333;
+  color: #fff;
+  padding: 0.2em 0.4em;
+  border-radius: 0;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Courier New', Courier, monospace;
+  font-size: 90%;
+}
+
+.markdown-cell pre {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  overflow-x: auto;
   margin: 1rem 0;
 }
 
-.notebook-container th,
-.notebook-container td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-.notebook-container th {
-  background-color: #f2f2f2;
-}
-
-/* Additional styles to make sure any Jupyter interface elements have square corners */
-.notebook-container .jp-Cell,
-.notebook-container .jp-InputArea,
-.notebook-container .jp-OutputArea,
-.notebook-container .jp-CodeMirrorEditor,
-.notebook-container button,
-.notebook-container input,
-.notebook-container .jp-RenderedHTMLCommon * {
-  border-radius: 0 !important;
+.markdown-cell pre code {
+  background-color: transparent;
+  color: #333;
+  padding: 0;
+  border-radius: 0;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Courier New', Courier, monospace;
 }
 
 /* Mobile responsiveness */

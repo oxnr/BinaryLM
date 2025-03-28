@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import NotebookViewer from '../components/NotebookViewer';
+import SimpleNotebookViewer from '../components/SimpleNotebookViewer';
 import './NotebooksPage.css';
 
 interface Notebook {
@@ -14,19 +14,19 @@ const AVAILABLE_NOTEBOOKS: Notebook[] = [
     id: 'build-lm-from-scratch',
     title: 'Building a Language Model from Scratch',
     description: 'Learn how to build a simple transformer-based language model from scratch using PyTorch.',
-    path: '/notebooks/Build_LM_From_Scratch.ipynb'
+    path: 'notebooks/Build_LM_From_Scratch.ipynb'
   },
   {
     id: 'building-with-transformers',
     title: 'Building LMs with the Transformers Library',
     description: 'Learn how to leverage the Hugging Face Transformers library to fine-tune and use pre-trained language models.',
-    path: '/notebooks/Building_with_Transformers.ipynb'
+    path: 'notebooks/Building_with_Transformers.ipynb'
   },
   {
     id: 'sample-notebook',
     title: 'Sample Notebook',
     description: 'A basic sample notebook to demonstrate the notebook viewer functionality.',
-    path: '/notebooks/sample_notebook.ipynb'
+    path: 'notebooks/sample_notebook.ipynb'
   }
 ];
 
@@ -35,6 +35,8 @@ const NotebooksPage: React.FC = () => {
 
   const handleSelectNotebook = (notebook: Notebook) => {
     setSelectedNotebook(notebook);
+    // Preload the notebook file to ensure it's available in browser cache
+    fetch(notebook.path).catch(err => console.error(`Error preloading notebook: ${err.message}`));
   };
 
   const handleBack = () => {
@@ -51,7 +53,7 @@ const NotebooksPage: React.FC = () => {
           >
             ← Back to notebooks
           </button>
-          <NotebookViewer 
+          <SimpleNotebookViewer 
             notebookPath={selectedNotebook.path} 
             title={selectedNotebook.title} 
           />

@@ -11,32 +11,44 @@ const NotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, title }) 
   const [notebook, setNotebook] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use absolute URL to ensure path is correct
+  const getAbsoluteNotebookPath = (path: string) => {
+    // Remove leading slash if it exists to avoid double slashes
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return `${window.location.origin}/${cleanPath}`;
+  };
 
   useEffect(() => {
     const fetchNotebook = async () => {
       try {
         setLoading(true);
-        console.log(`Fetching notebook from: ${notebookPath}`);
+        const absolutePath = getAbsoluteNotebookPath(notebookPath);
+        console.log(`Fetching notebook from: ${absolutePath}`);
         
-        const response = await fetch(notebookPath);
+        const response = await fetch(absolutePath);
+        console.log(`Fetch response status: ${response.status} ${response.statusText}`);
+        
         if (!response.ok) {
-          throw new Error(`Failed to fetch notebook from ${notebookPath}: ${response.statusText}`);
+          throw new Error(`Failed to fetch notebook: ${response.status} ${response.statusText}`);
         }
         
         const text = await response.text();
         console.log(`Received data length: ${text.length} characters`);
+        console.log(`First 50 characters: ${text.substring(0, 50)}...`);
         
         if (!text || text.trim() === '') {
           throw new Error('Received empty response');
         }
         
-        // Create a synthetic notebook if we can't load the real one
         try {
           const data = JSON.parse(text);
+          console.log('Successfully parsed notebook JSON');
           setNotebook(data);
           setError(null);
         } catch (parseError) {
           console.error('JSON parse error:', parseError);
+          console.error('Raw text received:', text);
           
           // Create a basic notebook structure for debugging
           const fallbackNotebook = {
@@ -67,6 +79,32 @@ const NotebookViewer: React.FC<NotebookViewerProps> = ({ notebookPath, title }) 
       } catch (err) {
         console.error('Error loading notebook:', err);
         setError(`Failed to load notebook: ${err instanceof Error ? err.message : String(err)}`);
+        
+        // Set a fallback notebook
+        setNotebook({
+          cells: [
+            {
+              cell_type: "markdown",
+              metadata: {},
+              source: [
+                "# Error Loading Notebook\n",
+                `\n`,
+                `We encountered an error while loading this notebook: ${err instanceof Error ? err.message : String(err)}\n`,
+                `\n`,
+                "Please try again later or download the notebooks directly from our GitHub repository."
+              ]
+            }
+          ],
+          metadata: {
+            kernelspec: {
+              display_name: "Python 3",
+              language: "python",
+              name: "python3"
+            }
+          },
+          nbformat: 4,
+          nbformat_minor: 5
+        });
       } finally {
         setLoading(false);
       }
