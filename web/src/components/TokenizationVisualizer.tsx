@@ -95,17 +95,27 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
   const [steps, setSteps] = useState<TokenStep[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTokenize = () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) {
+      setError('Please enter some text to tokenize');
+      return;
+    }
     
+    setError(null);
     setIsLoading(true);
     
     // Simulate API delay
     setTimeout(() => {
-      const mockSteps = generateMockTokenizationData(inputText);
-      setSteps(mockSteps);
-      setIsLoading(false);
+      try {
+        const mockSteps = generateMockTokenizationData(inputText);
+        setSteps(mockSteps);
+      } catch (err) {
+        setError('Failed to tokenize text. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }, 800);
   };
 
@@ -114,7 +124,7 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
     if (initialText) {
       handleTokenize();
     }
-  }, [initialText, handleTokenize]);
+  }, [initialText]);
 
   return (
     <div className="tokenization-visualizer">
@@ -124,14 +134,21 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
         <input
           type="text"
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
+          onChange={(e) => {
+            setInputText(e.target.value);
+            setError(null);
+          }}
           placeholder="Enter text to tokenize..."
           onKeyPress={(e) => e.key === 'Enter' && handleTokenize()}
         />
       </div>
       
-      <button className="tokenize-button" onClick={handleTokenize}>
-        Tokenize
+      <button 
+        className="tokenize-button" 
+        onClick={handleTokenize}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Tokenizing...' : 'Tokenize'}
       </button>
       
       <button 
@@ -140,6 +157,12 @@ const TokenizationVisualizer: React.FC<TokenizationVisualizerProps> = ({ text: i
       >
         {showExplanation ? "Hide Explanation" : "What is Tokenization?"}
       </button>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
       
       {showExplanation && (
         <div className="tokenization-explanation">

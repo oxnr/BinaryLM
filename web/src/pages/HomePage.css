@@ -152,7 +152,7 @@
 .connection-node {
   width: 100px;
   height: auto;
-  min-height: 90px;
+  min-height: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -165,11 +165,6 @@
 
 .connection-node:hover {
   transform: translateY(-5px);
-}
-
-.node-icon {
-  font-size: 2.5rem;
-  margin-bottom: 8px;
 }
 
 .node-label {
@@ -189,10 +184,6 @@
 .connection-arrow span {
   font-size: 0.8rem;
   margin-bottom: 5px;
-}
-
-.connection-arrow svg {
-  stroke-width: 2;
 }
 
 .connection-details {
@@ -231,8 +222,8 @@
     height: 80px;
   }
   
-  .node-icon {
-    font-size: 1.6rem;
+  .node-label {
+    font-size: 0.9rem;
   }
 }
 
@@ -246,20 +237,15 @@
   
   .process-step {
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     height: auto;
-    min-height: 200px;
-    margin-bottom: 30px;
-  }
-  
-  .flow-arrow {
-    transform: rotate(90deg);
-    margin: -10px 0;
+    min-height: 220px;
+    margin-bottom: 20px;
   }
   
   .process-step-link {
     width: 100%;
-    max-width: 350px;
+    max-width: 300px;
     flex: none;
   }
 }
@@ -276,18 +262,18 @@
   flex-wrap: nowrap;
   justify-content: center;
   align-items: stretch;
-  margin: 40px 0;
-  gap: 10px;
+  margin: 30px 0;
+  gap: 15px;
   overflow-x: auto;
   padding-bottom: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .process-step {
-  flex: 0 0 220px;
-  width: 220px;
+  flex: 0 0 200px;
+  width: 200px;
   height: 300px;
   background-color: white;
   border: 1px solid #eee;
@@ -303,22 +289,6 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-.step-number {
-  position: absolute;
-  top: -15px;
-  left: 20px;
-  width: 30px;
-  height: 30px;
-  background-color: #000;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
 .step-content {
   display: flex;
   flex-direction: column;
@@ -327,25 +297,27 @@
 }
 
 .step-content h3 {
-  margin-top: 10px;
+  margin-top: 0;
   margin-bottom: 15px;
   font-size: 1.2rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-number {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
 }
 
 .step-content p {
   flex-grow: 1;
-  margin-bottom: 20px;
-}
-
-.step-link {
-  margin-top: auto;
-  margin-bottom: 10px;
-  display: inline-block;
-  font-weight: 500;
-  color: #0066cc;
-  text-decoration: none;
-  transition: transform 0.2s ease;
+  margin-bottom: 0;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .step-icon {
@@ -355,8 +327,13 @@
   color: #666;
 }
 
+.step-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
 .flow-arrow {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #000;
   display: flex;
   align-items: center;
@@ -372,8 +349,8 @@
   text-decoration: none;
   color: inherit;
   display: block;
-  flex: 0 0 220px;
-  width: 220px;
+  flex: 0 0 200px;
+  width: 200px;
 }
 
 .process-step-link:hover .process-step {
