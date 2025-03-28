@@ -11,28 +11,10 @@ interface Notebook {
 
 const AVAILABLE_NOTEBOOKS: Notebook[] = [
   {
-    id: 'llm-5min-demo',
-    title: 'Language Model in 5 Minutes',
-    description: 'A complete end-to-end demonstration of building a language model - from data to generation with visualizations.',
-    path: 'notebooks/LLM_5min_Demo.ipynb'
-  },
-  {
-    id: 'build-lm-from-scratch',
-    title: 'Building a Language Model from Scratch',
-    description: 'Learn how to build a simple transformer-based language model from scratch using PyTorch.',
-    path: 'notebooks/Build_LM_From_Scratch.ipynb'
-  },
-  {
-    id: 'building-with-transformers',
-    title: 'Building LMs with the Transformers Library',
-    description: 'Learn how to leverage the Hugging Face Transformers library to fine-tune and use pre-trained language models.',
-    path: 'notebooks/Building_with_Transformers.ipynb'
-  },
-  {
-    id: 'sample-notebook',
-    title: 'Sample Notebook',
-    description: 'A basic sample notebook to demonstrate the notebook viewer functionality.',
-    path: 'notebooks/sample_notebook.ipynb'
+    id: 'llm-demo',
+    title: 'End-to-End Language Model Creation',
+    description: 'A comprehensive notebook demonstrating how to create a language model from scratch, including data preparation, tokenization, model architecture (Transformer), training, and text generation.',
+    path: 'notebooks/LLM_Demo.ipynb'
   }
 ];
 
