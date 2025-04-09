@@ -64,125 +64,172 @@ class TokenizeResponse(BaseModel):
     steps: List[TokenStep]
 
 
+class DocResponse(BaseModel):
+    """Response model for documentation endpoint."""
+    content: str
+    filename: str
+
+
 @app.get("/")
 async def root():
-    """Root endpoint to check if the API is running."""
-    return {"message": "BinaryLM API is running", "version": "0.1.0"}
+    """Root endpoint, returns basic server info."""
+    return {
+        "name": "BinaryLM API",
+        "version": "0.1.0",
+        "status": "running",
+        "endpoints": [
+            "/api/tokenize",
+            "/api/tokenizer/info",
+            "/api/docs/{filename}"
+        ]
+    }
+
+
+@app.get("/api/docs/{filename}", response_model=DocResponse)
+async def get_documentation(filename: str):
+    """
+    Serves documentation files like README.md, Glossary.md, etc.
+    
+    Args:
+        filename: Name of the documentation file to fetch
+        
+    Returns:
+        DocResponse: The content of the documentation file
+    """
+    # Get the project root directory (two levels up from this file)
+    current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    
+    # Try to find the file in the project root first
+    file_path = os.path.join(current_dir, filename)
+    
+    # If not in root, check web/public directory
+    if not os.path.exists(file_path):
+        file_path = os.path.join(current_dir, "web", "public", filename)
+    
+    # If still not found, raise an error
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"Documentation file '{filename}' not found")
+    
+    # Read the file
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        
+        return DocResponse(content=content, filename=filename)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
 
 
 @app.post("/api/tokenize", response_model=TokenizeResponse)
 async def tokenize(request: TokenizeRequest):
     """
-    Tokenize the input text and return the tokenization steps.
+    Tokenize input text and return the step-by-step process.
     
-    This endpoint demonstrates the different stages of tokenization:
-    1. Raw text
-    2. Pre-tokenization (splitting by whitespace)
-    3. Subword tokenization (BPE)
-    4. Token IDs and embeddings
+    This endpoint demonstrates how the tokenization process works by showing
+    each step from raw text to final tokens.
+    
+    Args:
+        request: TokenizeRequest object containing text to tokenize
+        
+    Returns:
+        TokenizeResponse: Step-by-step tokenization process
     """
-    try:
-        text = request.text.strip()
-        show_vectors = request.show_vectors
-        
-        # Step 1: Raw text
-        raw_step = TokenStep(
-            stage="Raw Text",
-            tokens=[Token(text=text, id=0, type="raw")]
-        )
-        
-        # Step 2: Pre-tokenization (split by whitespace)
-        pre_tokens = []
-        for i, word in enumerate(text.split()):
-            pre_tokens.append(Token(
-                text=word,
-                id=i,
-                type="word"
-            ))
-        
-        pre_tokenization_step = TokenStep(
-            stage="Pre-tokenization",
-            tokens=pre_tokens
-        )
-        
-        # Step 3: Subword tokenization (simplified for demo)
-        # In a real implementation, this would use the actual BPE algorithm
-        subword_tokens = []
-        token_idx = 0
-        
-        for i, word in enumerate(text.split()):
-            # Simple heuristic: split words longer than 5 characters
-            if len(word) > 5:
-                prefix = word[:3]
-                suffix = word[3:]
-                subword_tokens.append(Token(
-                    text=prefix,
-                    id=token_idx,
-                    type="subword-start"
-                ))
-                token_idx += 1
-                subword_tokens.append(Token(
-                    text=suffix,
-                    id=token_idx,
-                    type="subword-continuation"
-                ))
-                token_idx += 1
-            else:
-                subword_tokens.append(Token(
-                    text=word,
-                    id=token_idx,
-                    type="word"
-                ))
-                token_idx += 1
-        
-        subword_step = TokenStep(
-            stage="Subword Tokenization",
-            tokens=subword_tokens
-        )
-        
-        # Step 4: Convert to token IDs and generate vectors
-        # Use our actual tokenizer to encode the text
-        token_ids = tokenizer.encode(text)
-        
-        # Map these back to our tokens and generate random vectors if requested
-        final_tokens = []
-        for i, token in enumerate(subword_tokens):
-            # Mock embedding vector for demonstration
-            vector = None
-            if show_vectors:
-                import random
-                # Generate 8-dimensional random vector with values between -1 and 1
-                vector = [round(random.uniform(-1, 1), 2) for _ in range(8)]
-            
-            final_tokens.append(Token(
-                text=token.text,
-                id=1000 + i,  # Use a different ID range to show these are from the tokenizer
-                type=token.type,
-                vector=vector
-            ))
-        
-        token_step = TokenStep(
-            stage="Token IDs & Embeddings",
-            tokens=final_tokens
-        )
-        
-        # Return all steps in the tokenization process
-        return TokenizeResponse(
-            steps=[raw_step, pre_tokenization_step, subword_step, token_step]
-        )
+    text = request.text
+    show_vectors = request.show_vectors
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # In a real implementation, we would use our actual tokenizer
+    # For now, we'll create a simplified demonstration
+    
+    steps = []
+    
+    # Step 1: Normalization (lowercase, remove extra spaces)
+    normalized_text = text.lower().strip()
+    while "  " in normalized_text:
+        normalized_text = normalized_text.replace("  ", " ")
+    
+    normalization_tokens = [
+        Token(
+            text=text,
+            id=-1,  # No ID for raw text
+            type="raw"
+        ),
+        Token(
+            text=normalized_text,
+            id=-1,  # No ID for normalized text
+            type="normalized"
+        )
+    ]
+    
+    steps.append(TokenStep(
+        stage="normalization",
+        tokens=normalization_tokens
+    ))
+    
+    # Step 2: Pre-tokenization (split by whitespace)
+    pre_tokens = normalized_text.split()
+    pre_tokenization_tokens = [
+        Token(
+            text=token,
+            id=-1,  # No ID yet
+            type="pre_token"
+        ) for token in pre_tokens
+    ]
+    
+    steps.append(TokenStep(
+        stage="pre_tokenization",
+        tokens=pre_tokenization_tokens
+    ))
+    
+    # Step 3: BPE tokenization 
+    # For demo purposes, we'll just do some basic subword splitting
+    bpe_tokens = tokenizer.tokenize(normalized_text)
+    
+    # Convert to Token objects
+    bpe_tokenization_tokens = []
+    for i, token in enumerate(bpe_tokens):
+        token_obj = Token(
+            text=token,
+            id=i,  # Simple sequential ID for demo
+            type="token"
+        )
+        
+        # Add vector representation if requested
+        if show_vectors:
+            # In a real implementation, we would get actual embeddings
+            # For the demo, we'll just use random values
+            import random
+            token_obj.vector = [random.uniform(-1, 1) for _ in range(4)]  # 4D vectors for demo
+            
+        bpe_tokenization_tokens.append(token_obj)
+    
+    steps.append(TokenStep(
+        stage="bpe_tokenization",
+        tokens=bpe_tokenization_tokens
+    ))
+    
+    return TokenizeResponse(steps=steps)
 
 
 @app.get("/api/tokenizer/info")
 async def tokenizer_info():
-    """Get information about the tokenizer."""
+    """
+    Return information about the tokenizer.
+    
+    Returns:
+        Dict: Information about the tokenizer configuration
+    """
     return {
-        "vocabulary_size": len(tokenizer.token_to_id),
-        "special_tokens": list(tokenizer.special_tokens.values()),
-        "algorithm": "BPE (Byte-Pair Encoding)",
-        "sample_tokens": list(tokenizer.token_to_id.keys())[:20]  # Return first 20 tokens
+        "type": "BPE (Byte-Pair Encoding)",
+        "vocab_size": tokenizer.vocab_size,
+        "special_tokens": {
+            "PAD": "[PAD]",
+            "UNK": "[UNK]",
+            "BOS": "[BOS]",
+            "EOS": "[EOS]"
+        },
+        "sample_vocabulary": list(tokenizer.vocab.keys())[:20] if hasattr(tokenizer, 'vocab') else [],
+        "training_corpus_size": len(sample_texts),
+        "max_token_length": tokenizer.max_token_length if hasattr(tokenizer, 'max_token_length') else None
     }
 
 

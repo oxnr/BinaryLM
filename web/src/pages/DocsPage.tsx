@@ -21,6 +21,9 @@ interface DocFile {
   path: string;
 }
 
+// API URL - change this to match your backend API
+const API_URL = 'http://localhost:5001';
+
 const DocsPage: React.FC = () => {
   const { docId = 'readme' } = useParams<{ docId: string }>();
   const [markdown, setMarkdown] = useState<string>('');
@@ -55,16 +58,50 @@ const DocsPage: React.FC = () => {
         
         setShowExplainer(null);
         
-        // In a real application, you would fetch from a server
-        // For local development, we're reading from the public folder
-        const response = await fetch(selectedDoc.path);
+        // For development, serve from the public directory using API
+        // Instead of directly accessing the file, use the API
+        let markdownContent = '';
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${selectedDoc.path}`);
+        try {
+          // First try to fetch directly from public folder (for development)
+          console.log(`Trying to fetch from public folder: ${selectedDoc.path}`);
+          const response = await fetch(selectedDoc.path);
+          
+          if (response.ok) {
+            markdownContent = await response.text();
+          } else {
+            throw new Error("Couldn't load from public folder");
+          }
+        } catch (publicError) {
+          console.log("Failed to load from public, trying API...");
+          
+          // If that fails, try API fallback
+          try {
+            // Remove leading slash if present
+            const filename = selectedDoc.path.startsWith('/') ? selectedDoc.path.slice(1) : selectedDoc.path;
+            const apiResponse = await fetch(`${API_URL}/api/docs/${filename}`);
+            
+            if (!apiResponse.ok) {
+              throw new Error(`API error: ${apiResponse.status} ${apiResponse.statusText}`);
+            }
+            
+            const apiResult = await apiResponse.json();
+            markdownContent = apiResult.content;
+          } catch (apiError) {
+            console.error('API error:', apiError);
+            
+            // Last resort: use embedded markdown
+            if (selectedDoc.id === 'readme') {
+              markdownContent = `# BinaryLM Documentation\n\nThis is a fallback README content. The actual markdown file could not be loaded.\n\nPlease make sure the API server is running or the markdown files are properly placed in the public directory.`;
+            } else if (selectedDoc.id === 'glossary') {
+              markdownContent = `# Glossary\n\nThis is a fallback Glossary content. The actual markdown file could not be loaded.\n\nPlease make sure the API server is running or the markdown files are properly placed in the public directory.`;
+            } else {
+              throw new Error(`Failed to load documentation: ${apiError instanceof Error ? apiError.message : String(apiError)}`);
+            }
+          }
         }
         
-        const content = await response.text();
-        setMarkdown(content);
+        setMarkdown(markdownContent);
       } catch (err) {
         console.error('Error fetching markdown:', err);
         setError('Failed to load documentation. Please try again later.');

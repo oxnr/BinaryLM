@@ -1,0 +1,121 @@
+.prediction-visualizer {
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f5f7fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-visualizer h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.prediction-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.prediction-bar {
+  position: relative;
+  margin-bottom: 8px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-bar:hover {
+  transform: translateX(2px);
+}
+
+.prediction-bar.selected {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid #3498db;
+}
+
+.probability-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(52, 152, 219, 0.2);
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.token-info {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  height: 100%;
+  z-index: 2;
+}
+
+.token-text {
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.token-probability {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.no-predictions {
+  padding: 16px;
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.prediction-legend {
+  display: flex;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border-radius: 4px;
+  background-color: rgba(52, 152, 219, 0.2);
+}
+
+.legend-color.selected {
+  background-color: rgba(52, 152, 219, 0.5);
+  border-left: 2px solid #3498db;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .prediction-visualizer {
+    padding: 16px;
+  }
+  
+  .prediction-bar {
+    height: 32px;
+  }
+  
+  .token-text {
+    font-size: 0.9rem;
+  }
+  
+  .token-probability {
+    font-size: 0.8rem;
+  }
+} 

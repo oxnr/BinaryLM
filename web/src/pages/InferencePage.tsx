@@ -1,202 +1,433 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import PredictionVisualizer from '../components/PredictionVisualizer';
 import './InferencePage.css';
 
+interface TokenPrediction {
+  token: string;
+  probability: number;
+}
+
+interface TokenStep {
+  token: string;
+  predictions: TokenPrediction[];
+}
+
+// Fixed demonstration data
+const DEMO_PROMPT = "How do language models learn?";
+const DEMO_RESPONSE = "Language models learn through reinforcement learning techniques where the model parameters are iteratively adjusted to maximize prediction accuracy. This process involves training on vast corpora of text data, where each token prediction contributes to updating the weights of the neural network. By using reward signals to guide parameter tuning, the model gradually improves its ability to generate coherent and contextually appropriate text.";
+
+// Token vocabulary for generating random alternatives
+const VOCABULARY = [
+  'the', 'of', 'and', 'to', 'in', 'a', 'is', 'that', 'for', 'it', 
+  'with', 'as', 'was', 'be', 'by', 'on', 'not', 'this', 'but', 'from',
+  'are', 'or', 'an', 'they', 'which', 'you', 'their', 'has', 'have', 'had',
+  'its', 'at', 'been', 'if', 'more', 'when', 'will', 'would', 'who', 'what',
+  'language', 'model', 'transformer', 'neural', 'network', 'learning', 'deep',
+  'attention', 'embedding', 'token', 'layer', 'training', 'reinforcement',
+  'parameter', 'gradient', 'backpropagation', 'optimization', 'loss', 'function',
+  'algorithm', 'sequence', 'prediction', 'probability', 'distribution', 'sampling',
+  'generation', 'fine-tuning', 'weight', 'bias', 'activation', 'tensor', 'vector'
+];
+
 const InferencePage: React.FC = () => {
-  const [prompt, setPrompt] = useState<string>('');
-  const [response, setResponse] = useState<string>('');
+  const [generatedText, setGeneratedText] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<string>('binarylm-small');
+  const [isDemoRunning, setIsDemoRunning] = useState<boolean>(false);
+  const [currentPredictions, setCurrentPredictions] = useState<TokenPrediction[]>([]);
+  const [selectedToken, setSelectedToken] = useState<string>('');
   const [temperature, setTemperature] = useState<number>(0.7);
-  const [maxTokens, setMaxTokens] = useState<number>(512);
-  const [showParams, setShowParams] = useState<boolean>(false);
-
-  // The available models - would be fetched from an API in a real implementation
-  const availableModels = [
-    { id: 'binarylm-small', name: 'BinaryLM Small (2B)', description: 'Fast, lightweight model for basic text generation' },
-    { id: 'binarylm-medium', name: 'BinaryLM Medium (7B)', description: 'Balanced performance and quality' },
-    { id: 'binarylm-large', name: 'BinaryLM Large (13B)', description: 'High-quality responses for complex tasks' },
-  ];
-
-  const handleGenerate = () => {
-    if (!prompt.trim()) return;
-    
-    setIsGenerating(true);
-    setResponse('');
-    
-    // Simulated streaming response for demo purposes
-    let generatedText = '';
-    const sampleResponse = "This is a simulated response from the model. In a real application, this would connect to an API that interfaces with the language model. The model would receive the tokenized version of your prompt, run inference through its transformer layers, and generate a response token by token.\n\nEach token is selected based on the probability distribution output by the model, modified by the temperature parameter. Higher temperature (>1.0) results in more random responses, while lower values (<1.0) make the model more deterministic and focused.\n\nThe maximum tokens parameter limits how long the generated text can be. This is important because transformer models have a fixed context window size.";
-    const words = sampleResponse.split(' ');
-    
-    let i = 0;
-    const intervalId = setInterval(() => {
-      if (i < words.length) {
-        generatedText += ' ' + words[i];
-        setResponse(generatedText);
-        i++;
-      } else {
-        clearInterval(intervalId);
-        setIsGenerating(false);
+  const [generationSpeed, setGenerationSpeed] = useState<number>(2000); // ms between tokens
+  const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [generationHistory, setGenerationHistory] = useState<TokenStep[]>([]);
+  
+  // Add ref for tracking running state
+  const isRunningRef = useRef<boolean>(false);
+  
+  // Add cleanup effect
+  useEffect(() => {
+    return () => {
+      // Cleanup when component unmounts
+      isRunningRef.current = false;
+      setIsDemoRunning(false);
+      setIsGenerating(false);
+    };
+  }, []);
+  
+  // Split the completion into tokens (words in this simplified case)
+  const completionTokens = DEMO_RESPONSE.split(/\s+/);
+  
+  // Function to generate realistic-looking token probabilities
+  const generateTokenPredictions = (correctToken: string, step: number): TokenPrediction[] => {
+    try {
+      const predictions: TokenPrediction[] = [];
+      
+      // Add the correct token with high probability
+      // Earlier tokens are more "certain" than later ones
+      const certaintyFactor = Math.max(0.55, 0.9 - (step * 0.01));
+      const correctProb = certaintyFactor + (Math.random() * 0.15);
+      
+      predictions.push({
+        token: correctToken,
+        probability: correctProb
+      });
+      
+      // Generate 8-15 alternative predictions
+      const numAlternatives = 8 + Math.floor(Math.random() * 8);
+      // Instead of distributing remaining probability (1-correctProb),
+      // we'll use a value that will make the total exceed 100%
+      const totalAlternativeProbability = 0.8; // This will make total exceed 100%
+      
+      for (let i = 0; i < numAlternatives; i++) {
+        // Randomly sample from vocabulary, making sure not to duplicate
+        let randomToken: string;
+        let attempts = 0;
+        const maxAttempts = 100;
+        
+        do {
+          randomToken = VOCABULARY[Math.floor(Math.random() * VOCABULARY.length)];
+          attempts++;
+          if (attempts > maxAttempts) {
+            console.warn('Could not find unique token after max attempts');
+            break;
+          }
+        } while (predictions.some(p => p.token === randomToken));
+        
+        if (attempts <= maxAttempts) {
+          // Distribute probabilities using a decay function
+          // Earlier alternatives get higher probabilities
+          const decayFactor = 0.7 ** i;
+          let altProb = (totalAlternativeProbability * decayFactor) / numAlternatives;
+          
+          // Small random variation
+          altProb *= (0.8 + Math.random() * 0.4);
+          
+          predictions.push({
+            token: randomToken,
+            probability: altProb
+          });
+        }
       }
-    }, 50);
+      
+      // We're intentionally NOT normalizing probabilities to let them exceed 100%
+      return predictions.sort((a, b) => b.probability - a.probability);
+    } catch (error) {
+      console.error('Error generating token predictions:', error);
+      // Return a simple prediction with just the correct token
+      return [{
+        token: correctToken,
+        probability: 1.0
+      }];
+    }
   };
+  
+  // Demonstration of the generation process
+  const runDemo = async () => {
+    console.log("runDemo started");
+    
+    // Set states for running
+    isRunningRef.current = true;
+    setIsGenerating(true);
+    setIsDemoRunning(true);
+    setCurrentStep(0);
+    setShowSummary(false);
+    setGenerationHistory([]);
+    
+    // Start with an empty string
+    setGeneratedText('');
+    let builtText = '';
+    let lastTokenTime = performance.now();
+    let currentTokenIndex = 0;
+    let animationFrameId: number;
+    
+    console.log("Starting token generation loop, tokens:", completionTokens.length);
+    
+    const generateNextToken = (timestamp: number) => {
+      if (!isRunningRef.current) {
+        console.log("Demo stopped during generation");
+        setIsGenerating(false);
+        setIsDemoRunning(false);
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        return;
+      }
 
+      const timeSinceLastToken = timestamp - lastTokenTime;
+      console.log(`Time since last token: ${timeSinceLastToken}ms, Required: ${generationSpeed}ms`);
+
+      if (timeSinceLastToken >= generationSpeed) {
+        // Get the current token
+        const currentToken = completionTokens[currentTokenIndex];
+        console.log(`Generating token ${currentTokenIndex + 1}: "${currentToken}"`);
+        
+        // Set the current step (1-based for display)
+        setCurrentStep(currentTokenIndex + 1);
+        
+        // First, generate predictions for this token
+        const predictions = generateTokenPredictions(currentToken, currentTokenIndex);
+        console.log(`Generated ${predictions.length} predictions for token "${currentToken}"`);
+        
+        // Add to built text
+        if (currentTokenIndex === 0) {
+          builtText = currentToken;
+        } else {
+          builtText += ' ' + currentToken;
+        }
+        
+        // Display the text with the new token
+        setGeneratedText(builtText);
+        console.log(`Updated generated text (${builtText.length} chars)`);
+        
+        // Set the predictions and selected token
+        setCurrentPredictions(predictions);
+        setSelectedToken(currentToken);
+        
+        // Add this step to history
+        setGenerationHistory(prev => [...prev, {
+          token: currentToken,
+          predictions: predictions
+        }]);
+
+        lastTokenTime = timestamp;
+        currentTokenIndex++;
+      }
+
+      if (currentTokenIndex < completionTokens.length && isRunningRef.current) {
+        animationFrameId = requestAnimationFrame(generateNextToken);
+      } else {
+        // Generation complete
+        console.log("Token generation complete");
+        setCurrentStep(completionTokens.length);
+        setShowSummary(true);
+        setIsGenerating(false);
+        setIsDemoRunning(false);
+        isRunningRef.current = false;
+      }
+    };
+
+    // Start the animation frame loop
+    animationFrameId = requestAnimationFrame(generateNextToken);
+    
+    // Cleanup function
+    return () => {
+      isRunningRef.current = false;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  };
+  
+  const handleStopGeneration = () => {
+    isRunningRef.current = false;
+    setIsDemoRunning(false);
+    setIsGenerating(false);
+  };
+  
+  const handleRestartDemo = () => {
+    // Reset and restart the demo
+    console.log("handleRestartDemo called");
+    
+    // Make sure we reset any existing state
+    isRunningRef.current = false;
+    setIsGenerating(false);
+    setIsDemoRunning(false);
+    setCurrentStep(0);
+    setGeneratedText('');
+    setShowSummary(false);
+    setGenerationHistory([]);
+    setCurrentPredictions([]);
+    
+    // Add debugging
+    console.log("State reset complete");
+    console.log("DEMO_RESPONSE length:", DEMO_RESPONSE.length);
+    console.log("completionTokens:", completionTokens);
+    
+    // Start the demo immediately instead of using setTimeout
+    try {
+      console.log("Starting demo...");
+      runDemo();
+      console.log("Demo started successfully");
+    } catch (error) {
+      console.error("Error starting demo:", error);
+    }
+  };
+  
+  const handleToggleSummary = () => {
+    setShowSummary(!showSummary);
+  };
+  
+  // Handle manual token selection
+  const handleTokenClick = (token: string) => {
+    if (!isGenerating) return;
+    
+    // Update the selected token
+    setSelectedToken(token);
+    
+    // In a real implementation, this would change the generation path
+    console.log(`Token selected: ${token}`);
+  };
+  
   return (
     <div className="inference-page">
-      <h1>Model Inference</h1>
-      <p className="page-description">
-        Test the language model by providing a prompt and generating text. This simulates how an LLM processes your input and generates responses.
-      </p>
+      <header>
+        <h1>BinaryLM Inference</h1>
+        <p className="subtitle">
+          See how the model generates text one token at a time, with probability distributions for each step.
+        </p>
+      </header>
       
-      <div className="model-selection">
-        <h3>Select Model</h3>
-        <div className="model-options">
-          {availableModels.map((model) => (
-            <div
-              key={model.id}
-              className={`model-option ${selectedModel === model.id ? 'selected' : ''}`}
-              onClick={() => setSelectedModel(model.id)}
-            >
-              <h4>{model.name}</h4>
-              <p>{model.description}</p>
+      <div className="inference-container">
+        <div className="inference-controls">
+          <div className="control-group">
+            <label htmlFor="prompt">Demo Prompt:</label>
+            <div className="fixed-prompt">{DEMO_PROMPT}</div>
+            <p className="demo-explanation">
+              This demonstration shows how a language model generates text one token at a time,
+              with probabilities for each possible next token.
+            </p>
+          </div>
+          
+          <div className="control-row">
+            <div className="control-group">
+              <label htmlFor="temperature">Temperature:</label>
+              <input
+                id="temperature"
+                type="range"
+                min="0.1"
+                max="1.5"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                disabled={isGenerating}
+              />
+              <span className="param-value">{temperature.toFixed(1)}</span>
+              <p className="param-explanation">
+                Controls randomness: higher values produce more diverse outputs.
+              </p>
             </div>
-          ))}
+            
+            <div className="control-group">
+              <label htmlFor="speed">Generation Speed:</label>
+              <input
+                id="speed"
+                type="range"
+                min="500"
+                max="3000"
+                step="100"
+                value={generationSpeed}
+                onChange={(e) => setGenerationSpeed(parseInt(e.target.value))}
+                disabled={isGenerating}
+              />
+              <span className="param-value">{(generationSpeed / 1000).toFixed(1)}s</span>
+              <p className="param-explanation">
+                Time between token generations (slower = easier to follow).
+              </p>
+            </div>
+          </div>
+          
+          <div className="button-group">
+            {!isGenerating ? (
+              <>
+                <button 
+                  className="generate-button"
+                  onClick={handleRestartDemo}
+                >
+                  {currentStep === 0 ? 'Start Demo' : 'Restart Demo'}
+                </button>
+                {generationHistory.length > 0 && (
+                  <button 
+                    className="summary-button"
+                    onClick={handleToggleSummary}
+                  >
+                    {showSummary ? 'Show Latest Prediction' : 'Show Summary'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <button 
+                className="stop-button"
+                onClick={handleStopGeneration}
+              >
+                Stop Demo
+              </button>
+            )}
+          </div>
+        </div>
+        
+        <div className="generation-results">
+          <h2>Generated Text <span className="step-counter">Token: {currentStep}/{completionTokens.length}</span></h2>
+          
+          <div className="prompt-display">
+            <strong>Prompt:</strong> {DEMO_PROMPT}
+          </div>
+          
+          <div className="current-token-label">Generated Text:</div>
+          <div className="generated-content">
+            {generatedText || <span className="placeholder">Start the demo to see generation in action...</span>}
+            {isGenerating && <span className="cursor"></span>}
+          </div>
+          
+          <div className="distribution-heading">
+            {currentPredictions.length > 0 && (
+              <div className="current-distribution-info">
+                <span>Current token: <strong>{selectedToken}</strong></span>
+                <span className="distribution-subtitle">Showing prediction distribution for this token</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="predictions-section">
+            {showSummary && generationHistory.length > 0 ? (
+              <div className="summary-view">
+                <h3>Token Generation Summary</h3>
+                <div className="summary-scroll">
+                  {generationHistory.map((step, index) => (
+                    <div key={index} className="summary-item">
+                      <div className="summary-token">Token #{index + 1}: <strong>{step.token}</strong></div>
+                      <div className="summary-distribution">
+                        <PredictionVisualizer
+                          predictions={step.predictions}
+                          selectedToken={step.token}
+                          maxTokensToShow={5}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <PredictionVisualizer
+                predictions={currentPredictions}
+                selectedToken={selectedToken}
+                onTokenClick={handleTokenClick}
+                maxTokensToShow={12}
+              />
+            )}
+          </div>
         </div>
       </div>
       
-      <div className="inference-controls">
-        <div className="generation-params">
-          <button 
-            className="params-toggle" 
-            onClick={() => setShowParams(!showParams)}
-          >
-            {showParams ? 'Hide Parameters' : 'Show Parameters'}
-          </button>
-          
-          {showParams && (
-            <div className="params-controls">
-              <div className="param-control">
-                <label htmlFor="temperature">Temperature: {temperature}</label>
-                <input
-                  id="temperature"
-                  type="range"
-                  min="0.1"
-                  max="2"
-                  step="0.1"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                />
-                <span className="param-hint">Higher = more creative, Lower = more focused</span>
-              </div>
-              
-              <div className="param-control">
-                <label htmlFor="max-tokens">Max Tokens: {maxTokens}</label>
-                <input
-                  id="max-tokens"
-                  type="range"
-                  min="64"
-                  max="2048"
-                  step="64"
-                  value={maxTokens}
-                  onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                />
-                <span className="param-hint">Maximum length of generated text</span>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div className="prompt-input">
-          <label htmlFor="prompt">Enter your prompt:</label>
-          <textarea
-            id="prompt"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Type a prompt to generate text..."
-            rows={5}
-          />
-        </div>
-        
-        <button
-          className="generate-button"
-          onClick={handleGenerate}
-          disabled={isGenerating || !prompt.trim()}
-        >
-          {isGenerating ? 'Generating...' : 'Generate'}
-        </button>
-      </div>
-      
-      {(response || isGenerating) && (
-        <div className="model-response">
-          <h3>Model Response</h3>
-          <div className="response-content">
-            <p>{response}</p>
-            {isGenerating && <span className="typing-indicator">▌</span>}
-          </div>
-        </div>
-      )}
-      
-      <div className="inference-explainer">
-        <h3>How Inference Works</h3>
-        <div className="inference-steps">
-          <div className="inference-step">
-            <div className="step-number">1</div>
-            <div className="step-content">
-              <h4>Tokenization</h4>
-              <p>Your prompt is converted to token IDs using the model's vocabulary</p>
-            </div>
-          </div>
-          
-          <div className="inference-step">
-            <div className="step-number">2</div>
-            <div className="step-content">
-              <h4>Token Embedding</h4>
-              <p>Each token ID is converted to a vector representation</p>
-            </div>
-          </div>
-          
-          <div className="inference-step">
-            <div className="step-number">3</div>
-            <div className="step-content">
-              <h4>Attention Layers</h4>
-              <p>Token vectors flow through multiple transformer layers</p>
-            </div>
-          </div>
-          
-          <div className="inference-step">
-            <div className="step-number">4</div>
-            <div className="step-content">
-              <h4>Next Token Prediction</h4>
-              <p>Model predicts the most likely next token based on context</p>
-            </div>
-          </div>
-          
-          <div className="inference-step">
-            <div className="step-number">5</div>
-            <div className="step-content">
-              <h4>Token Selection</h4>
-              <p>A token is chosen based on its probability and the temperature</p>
-            </div>
-          </div>
-          
-          <div className="inference-step">
-            <div className="step-number">6</div>
-            <div className="step-content">
-              <h4>Auto-regressive Generation</h4>
-              <p>The process repeats, adding the new token to context</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="github-link">
-          <p>
-            Want to learn more or contribute? Visit the project on 
-            <a href="https://github.com/oxnr/BinaryLM" target="_blank" rel="noopener noreferrer">
-              GitHub
-            </a>
-          </p>
-        </div>
+      <div className="inference-explanation">
+        <h3>How It Works</h3>
+        <p>
+          This visualization demonstrates how a language model generates text. At each step, the model predicts 
+          probabilities for the next token based on the context, and then selects one token (typically using 
+          temperature sampling). The bars above show the top token candidates and their relative probabilities 
+          at the current step.
+        </p>
+        <p>
+          <strong>Reinforcement Learning in LLMs:</strong> The model's parameters are tuned through 
+          reinforcement learning techniques to maximize the likelihood of generating high-quality, 
+          accurate predictions. This process involves optimizing the model to predict tokens that 
+          lead to better outcomes based on various reward signals.
+        </p>
+        <p>
+          In production models, the visualization might differ slightly as real models work at the token level, 
+          not word level, and can include special tokens and subword units. The token probabilities often 
+          exceed 100% in total because they represent the model's confidence in each possible continuation, 
+          before normalization.
+        </p>
       </div>
     </div>
   );
